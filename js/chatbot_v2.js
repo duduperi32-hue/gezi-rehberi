@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════
-   Chatbot Module — Soru-Cevap Asistanı
+   Oyi (Advanced AI Chatbot) Module
    ═══════════════════════════════════════ */
 
 const Chatbot = (() => {
@@ -56,30 +56,72 @@ const Chatbot = (() => {
         
         // Show typing indicator
         const typingId = 'typing-' + Date.now();
-        const typingHtml = '<span class="typing-dots">Oyi düşünüyor...</span>';
+        const typingHtml = '<span class="typing-dots">Oyi derin bir şekilde düşünüyor...</span>';
         appendMessage(typingHtml, 'bot');
         
-        // Get the actual message div we just appended so we can remove it later
         const messagesDiv = document.getElementById('chatbot-messages');
-        const typingMsg = messagesDiv.lastElementChild; // Use element child safely
+        const typingMsg = messagesDiv.lastElementChild;
         
         try {
-            const reply = await generateReply(text.toLowerCase());
+            const reply = await generateReply(text.toLowerCase(), text);
             if (typingMsg) typingMsg.remove();
             appendMessage(reply, 'bot');
         } catch(e) {
             console.error(e);
             if (typingMsg) typingMsg.remove();
-            appendMessage('Bir hata oluştu.', 'bot');
+            appendMessage('🤖 Beklenmeyen bir ağ hatası oluştu, lütfen tekrar deneyin.', 'bot');
         }
     }
 
     // Logic to generate reply based on user input
-    async function generateReply(query) {
+    async function generateReply(query, originalQuery) {
+        
+        // 1. Math Evaluator (If user asks basic math)
+        try {
+            const mathMatch = query.match(/^([0-9\s\+\-\*\/\(\)\.]+)$/);
+            if (mathMatch && query.match(/\d/)) {
+                // Warning: eval is used only on strict mathematical strings
+                const result = Function('"use strict";return (' + mathMatch[1] + ')')();
+                if (!isNaN(result)) return `🤖 Matematik hesabım: <strong>${result}</strong>`;
+            }
+        } catch(e) {}
+
+        // 2. Date and Time
+        if (query.includes('saat kaç')) {
+            return `🤖 Şu an saat: <strong>${new Date().toLocaleTimeString('tr-TR')}</strong>`;
+        }
+        if (query.includes('bugün günlerden ne') || query.includes('tarih ne')) {
+            return `🤖 Bugünün tarihi: <strong>${new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>`;
+        }
+
+        // 3. Conversation & Predefined FAQ Brain
+        const faqBrain = {
+            "(nasılsın|naber|ne haber)": "Ben yapay bir zeka asistanıyım, dolayısıyla her zaman mükemmelim! Sana İstanbul'u anlatmak veya aklındaki herhangi bir soruyu cevaplamak için buradayım. Sen nasılsın?",
+            "(adın ne|sen kimsin|ismin ne)": "Benim adım <strong>Oyi</strong>! Ben İstanbul Gezi Rehberi'nin özel ve süper zeki asistanıyım. Sorularını cevaplamak için varım.",
+            "(teşekkür|sağol|eyvallah)": "Rica ederim! Başka yardım edebileceğim bir konu varsa buradayım.",
+            "(şaka yap|beni güldür|espri)": "Sana bir fıkra anlatayım: İki domates karşıdan karşıya geçiyormuş, biri diğerine 'dikkat et ezileceksin' demiş, diğeri 'hangimiiiiiiz splat!' 😂",
+            "(havalimanından nasıl gidilir|havalimanı ulaşım)": "İstanbul Havalimanı'ndan (IST) Havaist otobüsleriyle (örneğin Aksaray, Taksim, Beşiktaş yönüne) veya M11 metrosuyla Gayrettepe'ye geçip oradan şehrin her yerine ulaşabilirsiniz. Sabiha Gökçen'den (SAW) ise Havabüs veya M4 metrosu en iyi seçenektir.",
+            "(müze kart geçerli mi|müzekart)": "Topkapı Sarayı, İstanbul Arkeoloji Müzeleri, Galata Kulesi gibi Kültür Bakanlığı'na bağlı birçok yerde Müze Kart geçerlidir. Ancak Yerebatan Sarnıcı, Dolmabahçe Sarayı veya Galata Mevlevihanesi gibi belediye/Milli Saraylar işletmelerinde geçerli DEĞİLDİR.",
+            "(nöbetçi eczane|hastane)": "Acil durumlar için eczanelerin camlarında bulunan nöbetçi eczane listelerine bakabilir veya internetten aratabilirsiniz. Acil durumlarda 112'yi aramalısınız.",
+            "(taksi bulamıyorum|taksi uygulaması)": "İstanbul'da taksi bulmak bazen zordur. Mümkünse BiTaksi, Uber veya iTaksi gibi uygulamaları kullanmanızı, kısa mesafeler için metro ve tramvayı tercih etmenizi şiddetle tavsiye ederim.",
+            "(akbil|istanbulkart)": "İstanbulkart'ı metro, tramvay, vapur iskelelerinde bulunan Biletmatik cihazlarından satın alabilir ve bakiye yükleyebilirsiniz. Kredi kartı geçen makinelere dikkat ediniz.",
+            "(nereleri gez|nereye git|tavsiye ver|ne yap)": "İstanbul'da kesinlikle görmeniz gereken başyapıtlar şunlar: Sultanahmet bölgesindeki Ayasofya, Topkapı Sarayı ve Yerebatan Sarnıcı. Manzara için Galata Kulesi ve Çamlıca Tepesi. Eğer acıkırsanız 'kebap nerede yenir' diye sorabilirsiniz!",
+            "(kebap|et yemek)": "Sizi harika lezzetlere yönlendireyim! Hamdi Restoran, Dürümzade veya Şehzade Cağ Kebap mükemmel seçeneklerdir.",
+            "(tatlı|lokum|baklava)": "Tatlı kriziniz geldiyse Karaköy Güllüoğlu'nda baklava yiyebilir, Hafız Mustafa'dan lokum alabilir veya Saray Muhallebicisi'nde sütlü tatlı deneyebilirsiniz.",
+            "(kahve|çay)": "Geleneksel Türk kahvesi için Mandabatmaz veya Fazıl Bey'in Türk Kahvesi şahanedir. Manzaralı bir çay isterseniz Pierre Loti Tepesi sizi bekliyor.",
+            "(fast food|hızlı yemek|dürüm|hamburger)": "Hızlı ve lezzetli bir şeyler arıyorsanız Kızılkayalar'da Islak Hamburger, Borsam Taşfırın'da lahmacun veya Eminönü'nde meşhur Balık Ekmek yiyebilirsiniz."
+        };
+
+        for (const [pattern, answer] of Object.entries(faqBrain)) {
+            const regex = new RegExp(pattern, "i");
+            if (regex.test(query)) {
+                return `🤖 ${answer}`;
+            }
+        }
+
+        // 4. Local Places Database Match
         const allPlaces = [...places, ...foodPlaces];
         let foundPlace = null;
-
-        // Let's do a smarter word-based match on the TR names and ID
         for (const p of allPlaces) {
             const name = (p.name.tr || p.name).toLowerCase();
             const words = name.split(' ').filter(w => w.length > 3);
@@ -91,95 +133,56 @@ const Chatbot = (() => {
 
         if (foundPlace) {
             const name = foundPlace.name.tr || foundPlace.name;
-            
             if (query.includes('ücret') || query.includes('fiyat') || query.includes('ne kadar') || query.includes('para')) {
                 const fee = typeof foundPlace.entranceFee === 'object' ? foundPlace.entranceFee.tr : (foundPlace.entranceFee || (foundPlace.priceLevel === 0 ? 'Ücretsiz' : '₺'.repeat(foundPlace.priceLevel)));
-                return `<strong>${name}</strong> için fiyat/ücret bilgisi: ${fee}`;
+                return `🤖 <strong>${name}</strong> için fiyat/ücret bilgisi: ${fee}`;
             }
-            
             if (query.includes('saat') || query.includes('açık') || query.includes('kapalı') || query.includes('zaman')) {
                 const hours = typeof foundPlace.visitHours === 'object' ? foundPlace.visitHours.tr : foundPlace.visitHours;
-                return `<strong>${name}</strong> ziyaret saatleri: ${hours}`;
+                return `🤖 <strong>${name}</strong> ziyaret saatleri: ${hours}`;
             }
-            
             if (query.includes('nerede') || query.includes('ulaşım') || query.includes('nasıl') || query.includes('ilçe')) {
                 const dist = foundPlace.district || '';
                 const trans = typeof foundPlace.transport === 'object' ? foundPlace.transport.tr : (foundPlace.transport || '');
-                return `<strong>${name}</strong>, ${dist} ilçesinde yer alıyor. Ulaşım: ${trans}`;
+                return `🤖 <strong>${name}</strong>, ${dist} ilçesinde yer alıyor. Ulaşım: ${trans}`;
             }
-
-            // General Info
             const desc = typeof foundPlace.shortDesc === 'object' ? foundPlace.shortDesc.tr : foundPlace.shortDesc;
-            return `<strong>${name}:</strong> ${desc}<br><small>Daha detaylı bilgi (saat, ücret, ulaşım) sorabilirsiniz.</small>`;
+            return `🤖 <strong>${name}:</strong> ${desc}<br><small>Daha detaylı bilgi (saat, ücret, ulaşım) sorabilirsiniz.</small>`;
         }
 
-        // 2. Is the user asking for recommendations?
-        if (query.includes('kebap') || query.includes('et')) {
-            return recommend('kebap');
-        }
-        if (query.includes('tatlı') || query.includes('lokum') || query.includes('baklava')) {
-            return recommend('tatlı');
-        }
-        if (query.includes('kahve') || query.includes('çay')) {
-            return recommend('kafe');
-        }
-        if (query.includes('fast food') || query.includes('dürüm') || query.includes('hamburger')) {
-            return recommend('hızlı');
-        }
-        if (query.includes('cami')) {
-            return "Sultanahmet Camii veya Süleymaniye Camii'ni kesinlikle görmelisiniz!";
-        }
-        if (query.includes('manzara') || query.includes('tepe')) {
-            return "Manzara için Galata Kulesi, Çamlıca Tepesi veya Pierre Loti Tepesi harika seçeneklerdir.";
-        }
-        if (query.includes('gez') || query.includes('nereye') || query.includes('tavsiye') || query.includes('öneri')) {
-            return "İstanbul'da ilk olarak Ayasofya Camii, Topkapı Sarayı, Yerebatan Sarnıcı ve Galata Kulesi'ni gezmenizi şiddetle tavsiye ederim! Acıkırsanız bana 'kebap nerede yenir?' diye sorabilirsiniz.";
-        }
-
-        // 3. Fallback: Search Wikipedia as a smart AI feature!
+        // 5. DEEP WIKIPEDIA KNOWLEDGE RETRIEVAL (The Advanced AI Engine)
         try {
-            const searchUrl = `https://tr.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`;
+            // Using generator=search to get extracts for the top matches in a single request
+            const searchUrl = `https://tr.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(originalQuery)}&prop=extracts&exintro&explaintext&format=json&origin=*`;
             const searchRes = await fetch(searchUrl);
             const searchData = await searchRes.json();
             
-            if (searchData.query && searchData.query.search.length > 0) {
-                const bestMatch = searchData.query.search[0].title;
-                const extractUrl = `https://tr.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&format=json&origin=*&titles=${encodeURIComponent(bestMatch)}`;
-                const extractRes = await fetch(extractUrl);
-                const extractData = await extractRes.json();
-                const pages = extractData.query.pages;
-                const pageId = Object.keys(pages)[0];
-                if (pageId !== '-1' && pages[pageId].extract) {
-                    let text = pages[pageId].extract;
-                    if (text.length > 300) text = text.substring(0, 300) + '...';
-                    return `🤖 <strong>Oyi Araştırdı (${bestMatch}):</strong><br>${text}<br><a href="https://tr.wikipedia.org/wiki/${encodeURIComponent(bestMatch)}" target="_blank" style="color:var(--accent-primary);font-size:12px;text-decoration:underline;margin-top:5px;display:inline-block;">Vikipedi'de Devamını Oku</a>`;
+            if (searchData.query && searchData.query.pages) {
+                const pages = Object.values(searchData.query.pages);
+                // Sort by search rank index
+                pages.sort((a, b) => a.index - b.index);
+                
+                // Get the top result (or top 2 if we want more detail)
+                const topResult = pages[0];
+                
+                if (topResult && topResult.extract) {
+                    let text = topResult.extract;
+                    
+                    // If the extract is extremely long, we crop it nicely at the end of a sentence
+                    if (text.length > 500) {
+                        const cropPos = text.indexOf('.', 450);
+                        text = text.substring(0, cropPos > -1 ? cropPos + 1 : 500) + '..';
+                    }
+                    
+                    return `🤖 <strong>Oyi'nin Geniş Veritabanı Araştırması (${topResult.title}):</strong><br><br>${text}<br><br><a href="https://tr.wikipedia.org/wiki/${encodeURIComponent(topResult.title)}" target="_blank" style="color:var(--accent-primary);font-size:13px;text-decoration:underline;font-weight:bold;">🔗 Vikipedi'de Daha Fazla Oku</a>`;
                 }
             }
         } catch (e) {
-            console.error('Wikipedia fallback error:', e);
+            console.error('Advanced Wikipedia Retrieval Error:', e);
         }
 
-        return "Ben Oyi! Sorunu tam olarak anlayamadım veya ansiklopedide bulamadım. İstersen bana bir mekanın adını sorabilir veya 'kebap nerede yenir?' diyebilirsin!";
-    }
-
-    // Helper for recommendations
-    function recommend(type) {
-        let matches = [];
-        if (type === 'kebap') {
-            matches = foodPlaces.filter(p => (typeof p.cuisine === 'object' ? p.cuisine.tr : p.cuisine).toLowerCase().includes('kebap') || p.tier === 1);
-        } else if (type === 'tatlı') {
-            matches = foodPlaces.filter(p => p.tier === 4);
-        } else if (type === 'kafe') {
-            matches = foodPlaces.filter(p => p.tier === 3);
-        } else if (type === 'hızlı') {
-            matches = foodPlaces.filter(p => p.tier === 2);
-        }
-
-        if (matches.length > 0) {
-            const names = matches.slice(0, 3).map(m => `<strong>${m.name.tr || m.name}</strong>`).join(', ');
-            return `Size şuraları önerebilirim: ${names}.`;
-        }
-        return "Bu kategoride bir önerim yok maalesef.";
+        // 6. Absolute Fallback
+        return "🤖 Ben Oyi! Bu soruyu devasa bilgi ağımda eşleştiremedim. Lütfen sorunuzu farklı kelimelerle ifade edin (örneğin '1453 yılında ne oldu' veya 'Ayasofya nerede')!";
     }
 
     return {
