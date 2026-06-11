@@ -132,6 +132,9 @@ const Chatbot = (() => {
         if (query.includes('manzara') || query.includes('tepe')) {
             return "Manzara için Galata Kulesi, Çamlıca Tepesi veya Pierre Loti Tepesi harika seçeneklerdir.";
         }
+        if (query.includes('gez') || query.includes('nereye') || query.includes('tavsiye') || query.includes('öneri')) {
+            return "İstanbul'da ilk olarak Ayasofya Camii, Topkapı Sarayı, Yerebatan Sarnıcı ve Galata Kulesi'ni gezmenizi şiddetle tavsiye ederim! Acıkırsanız bana 'kebap nerede yenir?' diye sorabilirsiniz.";
+        }
 
         // 3. Fallback: Search Wikipedia as a smart AI feature!
         try {
