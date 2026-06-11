@@ -66,11 +66,11 @@ const Chatbot = (() => {
         const allPlaces = [...places, ...foodPlaces];
         let foundPlace = null;
 
-        // 1. Is the user asking about a specific place?
-        // Let's do a simple substring match on the TR names
+        // Let's do a smarter word-based match on the TR names and ID
         for (const p of allPlaces) {
             const name = (p.name.tr || p.name).toLowerCase();
-            if (query.includes(name) || query.includes(p.id)) {
+            const words = name.split(' ').filter(w => w.length > 3);
+            if (query.includes(p.id) || words.some(word => query.includes(word))) {
                 foundPlace = p;
                 break;
             }
