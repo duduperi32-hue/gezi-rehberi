@@ -2,7 +2,18 @@
    Oyi (Advanced AI Chatbot) Module
    ═══════════════════════════════════════ */
 
-const Chatbot = (() => {
+    const Chatbot = (() => {
+    let isOpen = false;
+    // Helper to get translation for chatbot UI
+    function t(key, placeholders = {}) {
+        const lang = App.getCurrentLang();
+        let text = (translations[lang] && translations[lang][key]) || translations.tr[key] || key;
+        // simple placeholder replacement
+        Object.entries(placeholders).forEach(([ph, val]) => {
+            text = text.replace(`{${ph}}`, val);
+        });
+        return text;
+    }
     let isOpen = false;
 
     // Toggle chat window
@@ -76,32 +87,46 @@ const Chatbot = (() => {
     // Logic to generate reply based on user input
     async function generateReply(query, originalQuery) {
         
-        // 1. Math Evaluator (If user asks basic math)
+        // 1. Math Evaluator (Handles +, -, *, /, ^, parentheses)
         try {
-            const mathMatch = query.match(/^([0-9\s\+\-\*\/\(\)\.]+)$/);
-            if (mathMatch && query.match(/\d/)) {
-                // Warning: eval is used only on strict mathematical strings
-                const result = Function('"use strict";return (' + mathMatch[1] + ')')();
-                if (!isNaN(result)) return `🤖 Matematik hesabım: <strong>${result}</strong>`;
+            // Allow ^ as exponentiation by converting to **
+            let expr = query.replace(/\^/g, '**');
+            // Ensure the expression contains only numbers, operators, parentheses, decimal points, and spaces
+            if (/^[0-9\s\+\-\*\/\.\(\)\*\*]+$/.test(expr) && /[0-9]/.test(expr)) {
+                // Use Function to evaluate in strict mode (no variables allowed)
+                const result = Function('"use strict";return (' + expr + ')')();
+                if (typeof result === 'number' && isFinite(result)) {
+                    return `🤖 Matematik hesabım: <strong>${result}</strong>`;
+                }
             }
-        } catch(e) {}
+        } catch(e) {
+            console.error('Math evaluation error:', e);
+        }
+
+        // 4. Web Search via Google Custom Search (fallback before Wikipedia)
+        try {
+            const webRes = await fetch(`/api/search?q=${encodeURIComponent(originalQuery)}`);
+            const webData = await webRes.json();
+            if (webData.results && webData.results.length > 0) {
+                const listItems = webData.results.map(r => `<li><a href="${r.link}" target="_blank" style="color:var(--accent-primary);">${r.title}</a><br><small>${r.snippet}</small></li>`).join('');
+                return `🤖 <strong>Google Web Sonuçları:</strong><ul>${listItems}</ul>`;
+            }
+        } catch(e) {
+            console.error('Google Search fetch error:', e);
+        }
 
         // 2. Date and Time
         if (query.includes('saat kaç')) {
             return `🤖 Şu an saat: <strong>${new Date().toLocaleTimeString('tr-TR')}</strong>`;
         }
         if (query.includes('bugün günlerden ne') || query.includes('tarih ne')) {
-            return `🤖 Bugünün tarihi: <strong>${new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>`;
-        }
-
-        // 3. Conversation & Predefined FAQ Brain
-        const faqBrain = {
+            return `🤖 Bugünün tarihi: <s        const faqBrain = {
             "(nasılsın|naber|ne haber)": "Ben yapay bir zeka asistanıyım, dolayısıyla her zaman mükemmelim! Sana İstanbul'u anlatmak veya aklındaki herhangi bir soruyu cevaplamak için buradayım. Sen nasılsın?",
             "(adın ne|sen kimsin|ismin ne)": "Benim adım <strong>Oyi</strong>! Ben İstanbul Gezi Rehberi'nin özel ve süper zeki asistanıyım. Sorularını cevaplamak için varım.",
             "(teşekkür|sağol|eyvallah)": "Rica ederim! Başka yardım edebileceğim bir konu varsa buradayım.",
             "(şaka yap|beni güldür|espri)": "Sana bir fıkra anlatayım: İki domates karşıdan karşıya geçiyormuş, biri diğerine 'dikkat et ezileceksin' demiş, diğeri 'hangimiiiiiiz splat!' 😂",
             "(havalimanından nasıl gidilir|havalimanı ulaşım)": "İstanbul Havalimanı'ndan (IST) Havaist otobüsleriyle (örneğin Aksaray, Taksim, Beşiktaş yönüne) veya M11 metrosuyla Gayrettepe'ye geçip oradan şehrin her yerine ulaşabilirsiniz. Sabiha Gökçen'den (SAW) ise Havabüs veya M4 metrosu en iyi seçenektir.",
-            "(müze kart geçerli mi|müzekart)": "Topkapı Sarayı, İstanbul Arkeoloji Müzeleri, Galata Kulesi gibi Kültür Bakanlığı'na bağlı birçok yerde Müze Kart geçerlidir. Ancak Yerebatan Sarnıcı, Dolmabahçe Sarayı veya Galata Mevlevihanesi gibi belediye/Milli Saraylar işletmelerinde geçerli DEĞİLDİR.",
+            "(müze kart geçerli mi|müzekart)": "Topkapı Sarayı, İstanbul Arkeoloji Müzeleri ve Galata Kulesi gibi Kültür Bakanlığı'na bağlı birçok yerde Müze Kart geçerlidir. Ancak Yerebatan Sarnıcı, Dolmabahçe Sarayı veya Galata Mevlevihanesi gibi belediye/Milli Saraylar işletmelerinde geçerli DEĞİLDİR.",
             "(nöbetçi eczane|hastane)": "Acil durumlar için eczanelerin camlarında bulunan nöbetçi eczane listelerine bakabilir veya internetten aratabilirsiniz. Acil durumlarda 112'yi aramalısınız.",
             "(taksi bulamıyorum|taksi uygulaması)": "İstanbul'da taksi bulmak bazen zordur. Mümkünse BiTaksi, Uber veya iTaksi gibi uygulamaları kullanmanızı, kısa mesafeler için metro ve tramvayı tercih etmenizi şiddetle tavsiye ederim.",
             "(akbil|istanbulkart)": "İstanbulkart'ı metro, tramvay, vapur iskelelerinde bulunan Biletmatik cihazlarından satın alabilir ve bakiye yükleyebilirsiniz. Kredi kartı geçen makinelere dikkat ediniz.",
@@ -109,6 +134,12 @@ const Chatbot = (() => {
             "(kebap|et yemek)": "Sizi harika lezzetlere yönlendireyim! Hamdi Restoran, Dürümzade veya Şehzade Cağ Kebap mükemmel seçeneklerdir.",
             "(tatlı|lokum|baklava)": "Tatlı kriziniz geldiyse Karaköy Güllüoğlu'nda baklava yiyebilir, Hafız Mustafa'dan lokum alabilir veya Saray Muhallebicisi'nde sütlü tatlı deneyebilirsiniz.",
             "(kahve|çay)": "Geleneksel Türk kahvesi için Mandabatmaz veya Fazıl Bey'in Türk Kahvesi şahanedir. Manzaralı bir çay isterseniz Pierre Loti Tepesi sizi bekliyor.",
+            "(fast food|hızlı yemek|dürüm|hamburger)": "Hızlı ve lezzetli bir şeyler arıyorsanız Kızılkayalar'da Islak Hamburger, Borsam Taşfırın'da lahmacun veya Eminönü'nde meşhur Balık Ekmek yiyebilirsiniz.",
+            // General culture patterns
+            "(kimdir|nedir|tanımı nedir|açıklama)": "Bu konuyla ilgili geniş bir açıklamayı Wikipedia üzerinden getireceğim. Lütfen bekleyin...",
+            "(ne zaman|tarihinde|tarihi)": "Belirtilen tarih olayını Wikipedia'dan özetleyeceğim.",
+            "(kaç|kaç tane|miktar)": "Bu soruya sayı olarak cevap vermeye çalışacağım, lütfen net bir ifade kullanın."
+        };esi için Mandabatmaz veya Fazıl Bey'in Türk Kahvesi şahanedir. Manzaralı bir çay isterseniz Pierre Loti Tepesi sizi bekliyor.",
             "(fast food|hızlı yemek|dürüm|hamburger)": "Hızlı ve lezzetli bir şeyler arıyorsanız Kızılkayalar'da Islak Hamburger, Borsam Taşfırın'da lahmacun veya Eminönü'nde meşhur Balık Ekmek yiyebilirsiniz."
         };
 

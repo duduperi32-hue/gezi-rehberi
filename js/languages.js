@@ -182,7 +182,16 @@ tr: {
     detail_moderate: 'Orta',
 
     // Footer
-    footer_text: 'Tüm hakları saklıdır'
+    footer_text: 'Tüm hakları saklıdır',
+    skip_all: 'Testi Atla & Hepsini Keşfet',
+    directions_button: '📍 Yol Tarifi Al',
+    reviews_button: '⭐ Google Yorumları',
+    login_placeholder: 'Kullanıcı Adınız',
+    chatbot_placeholder: 'Soru sorun...',
+    nav_home: 'Ana Sayfa',
+    nav_guide: 'Rehber',
+    nav_chat: 'Oyi',
+    nav_profile: 'Profil'
 },
 
 /* ╔═══════════════════════════╗
@@ -198,6 +207,19 @@ en: {
     welcome_f3: 'Food Guide',
     welcome_f4: 'Popular Places',
     welcome_lang_prompt: 'Choose your language',
+    skip_all: 'Skip Quiz & Explore All',
+    login_placeholder: 'Username',
+    chatbot_placeholder: 'Ask a question...',
+    nav_home: 'Home',
+    nav_guide: 'Guide',
+    nav_chat: 'Oyi',
+    nav_profile: 'Profile',
+    typing_indicator: 'Oyi is thinking deeply...',
+    math_result: '🤖 Math result: <strong>{result}</strong>',
+    error_network: '🤖 Unexpected network error occurred, please try again.',
+    web_results: '🤖 Google Web Results:',
+    directions_button: '📍 Get Directions',
+    reviews_button: '⭐ Google Reviews'
     welcome_start: 'Start Quiz',
 
     quiz_home: 'Home',
@@ -283,6 +305,13 @@ de: {
     welcome_f3: 'Essensführer',
     welcome_f4: 'Beliebte Orte',
     welcome_lang_prompt: 'Wählen Sie Ihre Sprache',
+    skip_all: 'Quiz überspringen & alles erkunden',
+    login_placeholder: 'Benutzername',
+    chatbot_placeholder: 'Stelle eine Frage...',
+    nav_home: 'Startseite',
+    nav_guide: 'Führer',
+    nav_chat: 'Oyi',
+    nav_profile: 'Profil',
     welcome_start: 'Quiz starten',
 
     quiz_home: 'Startseite', quiz_prev: 'Zurück', quiz_next: 'Weiter', quiz_finish: 'Quiz beenden',
@@ -362,6 +391,12 @@ fr: {
     welcome_f3: 'Guide Culinaire',
     welcome_f4: 'Lieux Populaires',
     welcome_lang_prompt: 'Choisissez votre langue',
+    skip_all: 'Passer le quiz & tout explorer',
+    login_placeholder: "Nom d'utilisateur",\n    chatbot_placeholder: 'Posez une question...',
+    nav_home: 'Accueil',
+    nav_guide: 'Guide',
+    nav_chat: 'Oyi',
+    nav_profile: 'Profil',
     welcome_start: 'Commencer le Quiz',
 
     quiz_home: 'Accueil', quiz_prev: 'Précédent', quiz_next: 'Suivant', quiz_finish: 'Terminer le Quiz',
@@ -441,6 +476,13 @@ ar: {
     welcome_f3: 'دليل الطعام',
     welcome_f4: 'أماكن شهيرة',
     welcome_lang_prompt: 'اختر لغتك',
+    skip_all: 'تخطي الاختبار واكتشاف الكل',
+    login_placeholder: 'اسم المستخدم',
+    chatbot_placeholder: 'اسأل سؤالًا...',
+    nav_home: 'الصفحة الرئيسية',
+    nav_guide: 'الدليل',
+    nav_chat: 'أوي',
+    nav_profile: 'الملف الشخصي',
     welcome_start: 'ابدأ الاختبار',
 
     quiz_home: 'الرئيسية', quiz_prev: 'السابق', quiz_next: 'التالي', quiz_finish: 'إنهاء الاختبار',
@@ -521,6 +563,13 @@ ru: {
     welcome_f4: 'Популярные места',
     welcome_lang_prompt: 'Выберите язык',
     welcome_start: 'Начать тест',
+    skip_all: 'Пропустить тест и исследовать всё',
+    login_placeholder: 'Имя пользователя',
+    chatbot_placeholder: 'Задайте вопрос...',
+    nav_home: 'Главная',
+    nav_guide: 'Гид',
+    nav_chat: 'Ой',
+    nav_profile: 'Профиль',
 
     quiz_home: 'Главная', quiz_prev: 'Назад', quiz_next: 'Далее', quiz_finish: 'Завершить тест',
 
