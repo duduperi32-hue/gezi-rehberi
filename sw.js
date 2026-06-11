@@ -1,19 +1,18 @@
-const CACHE_NAME = 'istanbul-gezisi-v2'; // Bumped version to force cache clear
+const CACHE_NAME = 'istanbul-gezisi-v3'; // Bump to v3 to FORCE update
 const urlsToCache = [
   './',
   './index.html',
   './css/style.css',
   './js/app.js',
   './js/deneme2.js',
-  './js/chatbot.js',
-  './js/extra.js',
-  './js/guide.js',
   './js/languages.js',
-  './js/quiz.js'
+  './js/quiz.js',
+  './js/guide.js',
+  './js/chatbot.js',
+  './js/extra.js'
 ];
 
 self.addEventListener('install', event => {
-  // Force waiting service worker to become active
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -24,7 +23,6 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  // Delete old caches
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -34,24 +32,27 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  // Claim clients immediately
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
-  // Network First strategy
+  // Network First, falling back to cache
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Cache the latest response
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseClone);
-        });
+        // Update the cache with the new response
+        if (response && response.status === 200 && response.type === 'basic') {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+        }
         return response;
       })
-      .catch(() => caches.match(event.request))
+      .catch(() => {
+        // If network fails, try the cache
+        return caches.match(event.request);
+      })
   );
 });
