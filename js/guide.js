@@ -194,7 +194,7 @@ const Guide = (() => {
 
         return `
         <div class="place-card" onclick="Guide.showDetail('${item.id}', ${isFood})" style="animation-delay: ${animDelay}s">
-            <div class="card-image" style="background: ${item.image || 'var(--bg-secondary)'}">
+            <div class="card-image" style="background-image: ${item.image || 'var(--bg-secondary)'}">
                 ${isFood
                     ? `<span class="card-tier tier-${item.tier}">${item.emoji || ''} ${tierLabels[item.tier] || ''}</span>`
                     : `<span class="card-category cat-${category}">${categoryLabel}</span>`
@@ -245,7 +245,7 @@ const Guide = (() => {
         const lang = App.getCurrentLang();
 
         // Hero image
-        document.getElementById('detail-hero-img').style.background = item.image || 'var(--bg-secondary)';
+        document.getElementById('detail-hero-img').style.backgroundImage = item.image || 'var(--bg-secondary)';
 
         // Category badge
         const category = isFood ? 'food' : (item.category || 'historical');
@@ -375,7 +375,7 @@ const Guide = (() => {
             const isFood = p.tier !== undefined;
             return `
             <div class="nearby-card" onclick="Guide.showDetail('${p.id}', ${isFood})">
-                <div class="nearby-img" style="background: ${p.image || 'var(--bg-secondary)'}"></div>
+                <div class="nearby-img" style="background-image: ${p.image || 'var(--bg-secondary)'}"></div>
                 <div class="nearby-info">
                     <div class="nearby-name">${getName(p)}</div>
                     <div class="nearby-district">📍 ${p.district}</div>
