@@ -156,3 +156,14 @@ App.skipQuiz = function(tab = 'all') {
     Guide.switchTab(tab);
     App.switchScreen('guide');
 };
+
+// --- DEVICE SELECTION ---
+App.selectDevice = function(type) {
+    if (type === 'desktop') {
+        document.body.classList.add('force-desktop');
+    } else {
+        document.body.classList.add('force-mobile');
+    }
+    document.getElementById('screen-device').classList.remove('active');
+    document.getElementById('screen-welcome').classList.add('active');
+};

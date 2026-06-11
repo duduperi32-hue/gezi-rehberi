@@ -59,8 +59,23 @@
         </div>
     </nav>
 
+    <!-- ══════════ DEVICE SELECTION SCREEN ══════════ -->
+    <section id="screen-device" class="screen active" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-primary); z-index: 9999; position: relative;">
+        <h2 style="margin-bottom: 30px; font-size: 28px; color: var(--text-primary); text-align: center;">Hangi Cihazı Kullanıyorsunuz?</h2>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <button class="btn-primary btn-glow" onclick="App.selectDevice('desktop')" style="flex-direction: column; width: 160px; height: 160px; font-size: 20px; border-radius: 20px;">
+                <span style="font-size: 60px; margin-bottom: 15px;">💻</span>
+                Bilgisayar
+            </button>
+            <button class="btn-primary btn-glow" onclick="App.selectDevice('mobile')" style="flex-direction: column; width: 160px; height: 160px; font-size: 20px; border-radius: 20px;">
+                <span style="font-size: 60px; margin-bottom: 15px;">📱</span>
+                Telefon
+            </button>
+        </div>
+    </section>
+
     <!-- ══════════ WELCOME SCREEN ══════════ -->
-    <section id="screen-welcome" class="screen active">
+    <section id="screen-welcome" class="screen">
         <div class="welcome-content">
             <div class="welcome-badge" data-i18n="welcome_badge">KİŞİSEL GEZİ REHBERİ</div>
             <h1 class="welcome-title">

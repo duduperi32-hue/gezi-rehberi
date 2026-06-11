@@ -947,3 +947,46 @@ img { max-width: 100%; display: block; }
         bottom: 70px; /* Push chatbot above bottom nav */
     }
 }
+
+/* ══════════ BACKGROUND IMAGE & DEVICE FORCES ══════════ */
+#screen-welcome {
+    background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Istanbul_-_Hagia_Sophia_from_the_Blue_Mosque.jpg/1920px-Istanbul_-_Hagia_Sophia_from_the_Blue_Mosque.jpg') no-repeat center center/cover;
+    position: relative;
+    z-index: 1;
+}
+
+#screen-welcome::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(11, 17, 33, 0.65); /* Dark overlay so text is readable */
+    z-index: -1;
+}
+
+/* Force Desktop overrides Media Queries */
+body.force-desktop .bottom-nav {
+    display: none !important;
+}
+body.force-desktop #navbar .nav-actions {
+    display: flex !important;
+}
+body.force-desktop {
+    padding-bottom: 0 !important;
+}
+body.force-desktop .chatbot-widget {
+    bottom: 20px !important;
+}
+
+/* Force Mobile overrides Media Queries */
+body.force-mobile .bottom-nav {
+    display: flex !important;
+}
+body.force-mobile #navbar .nav-actions {
+    display: none !important;
+}
+body.force-mobile {
+    padding-bottom: 70px !important;
+}
+body.force-mobile .chatbot-widget {
+    bottom: 70px !important;
+}
