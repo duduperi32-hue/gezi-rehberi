@@ -44,7 +44,7 @@ const Chatbot = (() => {
     }
 
     // Process User Message
-    function sendMessage() {
+    async function sendMessage() {
         const input = document.getElementById('chatbot-input-field');
         const text = input.value.trim();
         
@@ -54,15 +54,28 @@ const Chatbot = (() => {
         appendMessage(text, 'user');
         input.value = '';
         
-        // Simulate bot thinking time
-        setTimeout(() => {
-            const reply = generateReply(text.toLowerCase());
+        // Show typing indicator
+        const typingId = 'typing-' + Date.now();
+        const typingHtml = '<span class="typing-dots">Oyi düşünüyor...</span>';
+        appendMessage(typingHtml, 'bot');
+        
+        // Get the actual message div we just appended so we can remove it later
+        const messagesDiv = document.getElementById('chatbot-messages');
+        const typingMsg = messagesDiv.lastChild;
+        
+        try {
+            const reply = await generateReply(text.toLowerCase());
+            typingMsg.remove();
             appendMessage(reply, 'bot');
-        }, 500);
+        } catch(e) {
+            console.error(e);
+            typingMsg.remove();
+            appendMessage('Bir hata oluştu.', 'bot');
+        }
     }
 
     // Logic to generate reply based on user input
-    function generateReply(query) {
+    async function generateReply(query) {
         const allPlaces = [...places, ...foodPlaces];
         let foundPlace = null;
 
@@ -120,8 +133,30 @@ const Chatbot = (() => {
             return "Manzara için Galata Kulesi, Çamlıca Tepesi veya Pierre Loti Tepesi harika seçeneklerdir.";
         }
 
-        // 3. Fallback
-        return "Üzgünüm, sorunuzu tam anlayamadım. Bir mekanın adını söyleyerek 'Ayasofya nerede?' veya 'En iyi kebap nerede?' gibi sorular sorabilirsiniz.";
+        // 3. Fallback: Search Wikipedia as a smart AI feature!
+        try {
+            const searchUrl = `https://tr.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`;
+            const searchRes = await fetch(searchUrl);
+            const searchData = await searchRes.json();
+            
+            if (searchData.query && searchData.query.search.length > 0) {
+                const bestMatch = searchData.query.search[0].title;
+                const extractUrl = `https://tr.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&format=json&origin=*&titles=${encodeURIComponent(bestMatch)}`;
+                const extractRes = await fetch(extractUrl);
+                const extractData = await extractRes.json();
+                const pages = extractData.query.pages;
+                const pageId = Object.keys(pages)[0];
+                if (pageId !== '-1' && pages[pageId].extract) {
+                    let text = pages[pageId].extract;
+                    if (text.length > 300) text = text.substring(0, 300) + '...';
+                    return `🤖 <strong>Oyi Araştırdı (${bestMatch}):</strong><br>${text}<br><a href="https://tr.wikipedia.org/wiki/${encodeURIComponent(bestMatch)}" target="_blank" style="color:var(--accent-primary);font-size:12px;text-decoration:underline;margin-top:5px;display:inline-block;">Vikipedi'de Devamını Oku</a>`;
+                }
+            }
+        } catch (e) {
+            console.error('Wikipedia fallback error:', e);
+        }
+
+        return "Ben Oyi! Sorunu tam olarak anlayamadım veya ansiklopedide bulamadım. İstersen bana bir mekanın adını sorabilir veya 'kebap nerede yenir?' diyebilirsin!";
     }
 
     // Helper for recommendations
