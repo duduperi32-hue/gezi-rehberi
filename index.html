@@ -69,20 +69,20 @@
             <p class="welcome-desc" data-i18n="welcome_desc">15 soruluk testimizi çözün, size özel hazırlanmış gezi rehberinizi alın. En popüler mekanlar, restoranlar, kafeler ve daha fazlası!</p>
 
             <div class="welcome-features">
-                <div class="feature-item">
+                <div class="feature-item" onclick="App.startQuiz()" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <span class="feature-icon">📝</span>
                     <span class="feature-text" data-i18n="welcome_f1">15 Soru Test</span>
                 </div>
-                <div class="feature-item">
+                <div class="feature-item" onclick="App.skipQuiz('recommended')" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <span class="feature-icon">🗺️</span>
                     <span class="feature-text" data-i18n="welcome_f2">Kişisel Rehber</span>
                 </div>
-                <div class="feature-item">
+                <div class="feature-item" onclick="App.skipQuiz('food')" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <span class="feature-icon">🍽️</span>
                     <span class="feature-text" data-i18n="welcome_f3">Yemek Rehberi</span>
                 </div>
-                <div class="feature-item">
-                    <span class="feature-icon">📸</span>
+                <div class="feature-item" onclick="App.skipQuiz('popular')" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <span class="feature-icon">🔥</span>
                     <span class="feature-text" data-i18n="welcome_f4">Popüler Yerler</span>
                 </div>
             </div>
@@ -99,10 +99,15 @@
                 </div>
             </div>
 
-            <button class="btn-primary btn-glow" id="btn-start-quiz" onclick="App.startQuiz()">
-                <span data-i18n="welcome_start">Teste Başla</span>
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
-            </button>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn-primary btn-glow" id="btn-start-quiz" onclick="App.startQuiz()">
+                    <span data-i18n="welcome_start">Teste Başla</span>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                </button>
+                <button class="btn-secondary" onclick="App.skipQuiz('all')" style="width: 100%; justify-content: center;">
+                    Testi Atla & Hepsini Keşfet
+                </button>
+            </div>
         </div>
     </section>
 

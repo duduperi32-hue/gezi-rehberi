@@ -149,3 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
         makeDraggable(widget, header);
     }
 });
+
+// --- SKIP QUIZ ---
+App.skipQuiz = function(tab = 'all') {
+    Guide.setProfile(null);
+    Guide.switchTab(tab);
+    App.switchScreen('guide');
+};
