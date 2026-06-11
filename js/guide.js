@@ -257,10 +257,17 @@ const Guide = (() => {
         document.getElementById('detail-name').textContent = getName(item);
         document.getElementById('detail-district').textContent = item.district || '';
 
-        // Directions Link
+        // Directions & Reviews Links
         const btnDirections = document.getElementById('btn-directions');
+        const btnReviews = document.getElementById('btn-reviews');
         const mapQuery = encodeURIComponent(`${getName(item)} Istanbul`);
-        btnDirections.href = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
+        
+        if (btnDirections) {
+            btnDirections.href = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
+        }
+        if (btnReviews) {
+            btnReviews.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+        }
 
         // Meta
         document.getElementById('detail-rating').textContent = `⭐ ${(item.rating || 0).toFixed(1)}`;
