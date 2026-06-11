@@ -164,6 +164,8 @@ App.selectDevice = function(type) {
     } else {
         document.body.classList.add('force-mobile');
     }
+    document.getElementById('screen-device').style.display = 'none';
     document.getElementById('screen-device').classList.remove('active');
+    document.getElementById('screen-welcome').style.display = 'flex';
     document.getElementById('screen-welcome').classList.add('active');
 };

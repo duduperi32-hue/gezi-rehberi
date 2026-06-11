@@ -8,7 +8,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=3">
+    <!-- Force Cache Clear -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+        if (window.caches) {
+            caches.keys().then(function(names) {
+                for (let name of names) caches.delete(name);
+            });
+        }
+    </script>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1CB5E0">
 </head>
@@ -60,7 +75,7 @@
     </nav>
 
     <!-- ══════════ DEVICE SELECTION SCREEN ══════════ -->
-    <section id="screen-device" class="screen active" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-primary); z-index: 9999; position: relative;">
+    <section id="screen-device" class="screen active" style="flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-primary); z-index: 9999; position: relative;">
         <h2 style="margin-bottom: 30px; font-size: 28px; color: var(--text-primary); text-align: center;">Hangi Cihazı Kullanıyorsunuz?</h2>
         <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
             <button class="btn-primary btn-glow" onclick="App.selectDevice('desktop')" style="flex-direction: column; width: 160px; height: 160px; font-size: 20px; border-radius: 20px;">
