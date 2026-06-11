@@ -61,15 +61,15 @@ const Chatbot = (() => {
         
         // Get the actual message div we just appended so we can remove it later
         const messagesDiv = document.getElementById('chatbot-messages');
-        const typingMsg = messagesDiv.lastChild;
+        const typingMsg = messagesDiv.lastElementChild; // Use element child safely
         
         try {
             const reply = await generateReply(text.toLowerCase());
-            typingMsg.remove();
+            if (typingMsg) typingMsg.remove();
             appendMessage(reply, 'bot');
         } catch(e) {
             console.error(e);
-            typingMsg.remove();
+            if (typingMsg) typingMsg.remove();
             appendMessage('Bir hata oluştu.', 'bot');
         }
     }
