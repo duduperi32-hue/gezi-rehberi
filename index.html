@@ -134,9 +134,7 @@
                     <span data-i18n="welcome_start">Teste Başla</span>
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
                 </button>
-                <button class="btn-secondary" onclick="App.skipQuiz('all')" style="width: 100%; justify-content: center;">
-                    Testi Atla & Hepsini Keşfet
-                </button>
+                <button class="btn-secondary" onclick="App.skipQuiz('all')" style="width: 100%; justify-content: center;" data-i18n="skip_all">Testi Atla & Hepsini Keşfet</button>
             </div>
         </div>
     </section>
@@ -347,7 +345,7 @@
             </div>
         </div>
         <div class="chatbot-input">
-            <input type="text" id="chatbot-input-field" placeholder="Soru sorun..." onkeypress="Chatbot.handleEnter(event)">
+            <input type="text" id="chatbot-input-field" data-i18n="chatbot_placeholder" placeholder="" onkeypress="Chatbot.handleEnter(event)">
             <button class="btn-send-chat" onclick="Chatbot.sendMessage()">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
@@ -361,7 +359,7 @@
             <button class="btn-close-chat" onclick="App.closeLogin()">×</button>
         </div>
         <div style="padding: 20px;">
-            <input type="text" id="login-username" placeholder="Kullanıcı Adınız" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; margin-bottom: 15px; outline: none;">
+            <input type="text" id="login-username" data-i18n="login_placeholder" placeholder="" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; margin-bottom: 15px; outline: none;">
             <button class="btn-primary" onclick="App.doLogin()" style="width: 100%; justify-content: center; padding: 10px;">Giriş Yap</button>
         </div>
     </div>
@@ -370,19 +368,19 @@
     <nav class="bottom-nav">
         <a href="#" class="nav-item" onclick="App.goHome()">
             <span class="nav-icon">🏠</span>
-            <span class="nav-text">Ana Sayfa</span>
+            <span class="nav-text" data-i18n="nav_home">Ana Sayfa</span>
         </a>
         <a href="#" class="nav-item" onclick="App.showGuide()">
             <span class="nav-icon">🗺️</span>
-            <span class="nav-text">Rehber</span>
+            <span class="nav-text" data-i18n="nav_guide">Rehber</span>
         </a>
         <a href="#" class="nav-item" onclick="Chatbot.toggle()">
             <span class="nav-icon">💬</span>
-            <span class="nav-text">Oyi</span>
+            <span class="nav-text" data-i18n="nav_chat">Oyi</span>
         </a>
         <a href="#" class="nav-item" onclick="App.openLogin()">
             <span class="nav-icon">👤</span>
-            <span class="nav-text">Profil</span>
+            <span class="nav-text" data-i18n="nav_profile">Profil</span>
         </a>
     </nav>
 

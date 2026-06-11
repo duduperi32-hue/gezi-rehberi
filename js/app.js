@@ -164,7 +164,11 @@ const App = (() => {
             const key = el.getAttribute('data-i18n');
             const text = t(key);
             if (text) {
-                el.textContent = text;
+                if (el.hasAttribute('placeholder')) {
+                    el.setAttribute('placeholder', text);
+                } else {
+                    el.textContent = text;
+                }
             }
         });
     }
