@@ -257,6 +257,11 @@ const Guide = (() => {
         document.getElementById('detail-name').textContent = getName(item);
         document.getElementById('detail-district').textContent = item.district || '';
 
+        // Directions Link
+        const btnDirections = document.getElementById('btn-directions');
+        const mapQuery = encodeURIComponent(`${getName(item)} Istanbul`);
+        btnDirections.href = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
+
         // Meta
         document.getElementById('detail-rating').textContent = `⭐ ${(item.rating || 0).toFixed(1)}`;
         const priceSymbol = item.priceLevel === 0 ? t('detail_free') : '₺'.repeat(item.priceLevel || 1);

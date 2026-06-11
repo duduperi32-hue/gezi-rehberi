@@ -51,6 +51,12 @@ App.changeTheme = function(theme) {
     root.style.removeProperty('--color-secondary');
     root.style.removeProperty('--color-accent');
 
+    // Reset text colors to defaults if we switch out of coffee
+    root.style.removeProperty('--text-primary');
+    root.style.removeProperty('--text-secondary');
+    root.style.removeProperty('--bg-glass');
+    root.style.removeProperty('--border-subtle');
+
     if (theme === 'sunset') {
         root.style.setProperty('--bg-primary', '#2D142C');
         root.style.setProperty('--bg-secondary', '#510A32');
@@ -75,6 +81,16 @@ App.changeTheme = function(theme) {
         root.style.setProperty('--color-primary', '#707070');
         root.style.setProperty('--color-secondary', '#A0A0A0');
         root.style.setProperty('--color-accent', '#404040');
+    } else if (theme === 'coffee') {
+        root.style.setProperty('--bg-primary', '#FDFBF7');
+        root.style.setProperty('--bg-secondary', '#F5EBE0');
+        root.style.setProperty('--color-primary', '#8B5A2B'); // Brown
+        root.style.setProperty('--color-secondary', '#CD853F'); // Peru
+        root.style.setProperty('--color-accent', '#D2B48C'); // Tan
+        root.style.setProperty('--text-primary', '#3E2723'); // Dark Brown
+        root.style.setProperty('--text-secondary', '#5D4037');
+        root.style.setProperty('--bg-glass', 'rgba(139, 90, 43, 0.1)'); // light brown glass
+        root.style.setProperty('--border-subtle', 'rgba(139, 90, 43, 0.2)');
     }
 };
 

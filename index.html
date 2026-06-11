@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1CB5E0">
 </head>
 <body>
 
@@ -33,6 +35,7 @@
                     <option value="forest" style="color: black;">Orman</option>
                     <option value="ocean" style="color: black;">Okyanus</option>
                     <option value="midnight" style="color: black;">Gece</option>
+                    <option value="coffee" style="color: black;">Kahve</option>
                 </select>
                 <button class="btn-icon" id="btn-chatbot" onclick="Chatbot.toggle()" title="Rehber Asistanı" style="margin-right: 15px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
                     💬
@@ -234,6 +237,9 @@
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                         <span id="detail-district"></span>
                     </div>
+                    <a href="#" id="btn-directions" target="_blank" class="btn-primary" style="margin-top: 15px; display: inline-flex; font-size: 14px; padding: 10px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                        📍 Yol Tarifi Al
+                    </a>
                 </div>
             </div>
 
@@ -320,6 +326,26 @@
         </div>
     </div>
 
+    <!-- ══════════ MOBILE BOTTOM NAVIGATION ══════════ -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item" onclick="App.goHome()">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Ana Sayfa</span>
+        </a>
+        <a href="#" class="nav-item" onclick="App.showGuide()">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-text">Rehber</span>
+        </a>
+        <a href="#" class="nav-item" onclick="Chatbot.toggle()">
+            <span class="nav-icon">💬</span>
+            <span class="nav-text">Oyi</span>
+        </a>
+        <a href="#" class="nav-item" onclick="App.openLogin()">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">Profil</span>
+        </a>
+    </nav>
+
     <!-- ── Footer ── -->
     <footer id="app-footer">
         <p>Istanbul Guide © 2026 — <span data-i18n="footer_text">Tüm hakları saklıdır</span></p>
@@ -333,5 +359,14 @@
     <script src="js/guide.js"></script>
     <script src="js/app.js"></script>
     <script src="js/extra.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').then(reg => {
+            console.log('SW registered!', reg);
+          });
+        });
+      }
+    </script>
 </body>
 </html>
