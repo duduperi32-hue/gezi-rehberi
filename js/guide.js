@@ -266,7 +266,7 @@ const Guide = (() => {
             btnDirections.href = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
         }
         if (btnReviews) {
-            btnReviews.href = `https://www.google.com/search?q=${mapQuery}+yorumlar`;
+            btnReviews.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
         }
 
         // Meta
