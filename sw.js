@@ -1,4 +1,4 @@
-const CACHE_NAME = 'istanbul-gezisi-v4'; // Bump to v4 to FORCE update
+const CACHE_NAME = 'istanbul-gezisi-v5'; // Bump to v5 to FORCE update
 const urlsToCache = [
   './',
   './index.html',
@@ -8,8 +8,9 @@ const urlsToCache = [
   './js/languages.js',
   './js/quiz.js',
   './js/guide.js',
-  './js/chatbot.js',
-  './js/extra.js'
+  './js/chatbot_v2.js',
+  './js/extra.js',
+  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap'
 ];
 
 self.addEventListener('install', event => {
