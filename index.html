@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Istanbul Guide — Kişisel Gezi Rehberi</title>
+    <meta name="description" content="İstanbul'un en popüler yerlerini keşfedin. 15 soruluk teste göre size özel gezi rehberi.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ── Background Effects ── -->
+    <div class="bg-gradient"></div>
+    <div class="bg-particles" id="bg-particles"></div>
+
+    <!-- ══════════ NAVBAR ══════════ -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-brand" id="nav-brand" onclick="App.goHome()">
+                <span class="brand-icon">🕌</span>
+                <span class="brand-text">Istanbul<span class="brand-accent">Guide</span></span>
+            </a>
+            <div class="nav-actions">
+                <div class="lang-dropdown" id="lang-dropdown">
+                    <button class="lang-current" id="lang-current" onclick="App.toggleLangMenu()">
+                        <span class="lang-flag" id="current-flag">🇹🇷</span>
+                        <span class="lang-name" id="current-lang-name">TR</span>
+                        <svg class="lang-arrow" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                    </button>
+                    <div class="lang-menu" id="lang-menu">
+                        <button class="lang-option active" data-lang="tr" onclick="App.setLanguage('tr')"><span>🇹🇷</span> Türkçe</button>
+                        <button class="lang-option" data-lang="en" onclick="App.setLanguage('en')"><span>🇬🇧</span> English</button>
+                        <button class="lang-option" data-lang="de" onclick="App.setLanguage('de')"><span>🇩🇪</span> Deutsch</button>
+                        <button class="lang-option" data-lang="fr" onclick="App.setLanguage('fr')"><span>🇫🇷</span> Français</button>
+                        <button class="lang-option" data-lang="ar" onclick="App.setLanguage('ar')"><span>🇸🇦</span> العربية</button>
+                        <button class="lang-option" data-lang="ru" onclick="App.setLanguage('ru')"><span>🇷🇺</span> Русский</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ══════════ WELCOME SCREEN ══════════ -->
+    <section id="screen-welcome" class="screen active">
+        <div class="welcome-content">
+            <div class="welcome-badge" data-i18n="welcome_badge">KİŞİSEL GEZİ REHBERİ</div>
+            <h1 class="welcome-title">
+                <span class="title-line" data-i18n="welcome_title_1">İstanbul'u</span>
+                <span class="title-line title-accent" data-i18n="welcome_title_2">Keşfedin</span>
+            </h1>
+            <p class="welcome-desc" data-i18n="welcome_desc">15 soruluk testimizi çözün, size özel hazırlanmış gezi rehberinizi alın. En popüler mekanlar, restoranlar, kafeler ve daha fazlası!</p>
+
+            <div class="welcome-features">
+                <div class="feature-item">
+                    <span class="feature-icon">📝</span>
+                    <span class="feature-text" data-i18n="welcome_f1">15 Soru Test</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🗺️</span>
+                    <span class="feature-text" data-i18n="welcome_f2">Kişisel Rehber</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🍽️</span>
+                    <span class="feature-text" data-i18n="welcome_f3">Yemek Rehberi</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📸</span>
+                    <span class="feature-text" data-i18n="welcome_f4">Popüler Yerler</span>
+                </div>
+            </div>
+
+            <div class="welcome-lang-select">
+                <p class="lang-prompt" data-i18n="welcome_lang_prompt">Dilinizi seçin</p>
+                <div class="lang-grid" id="welcome-lang-grid">
+                    <button class="lang-btn active" data-lang="tr" onclick="App.setLanguage('tr')"><span class="lang-flag-lg">🇹🇷</span><span>Türkçe</span></button>
+                    <button class="lang-btn" data-lang="en" onclick="App.setLanguage('en')"><span class="lang-flag-lg">🇬🇧</span><span>English</span></button>
+                    <button class="lang-btn" data-lang="de" onclick="App.setLanguage('de')"><span class="lang-flag-lg">🇩🇪</span><span>Deutsch</span></button>
+                    <button class="lang-btn" data-lang="fr" onclick="App.setLanguage('fr')"><span class="lang-flag-lg">🇫🇷</span><span>Français</span></button>
+                    <button class="lang-btn" data-lang="ar" onclick="App.setLanguage('ar')"><span class="lang-flag-lg">🇸🇦</span><span>العربية</span></button>
+                    <button class="lang-btn" data-lang="ru" onclick="App.setLanguage('ru')"><span class="lang-flag-lg">🇷🇺</span><span>Русский</span></button>
+                </div>
+            </div>
+
+            <button class="btn-primary btn-glow" id="btn-start-quiz" onclick="App.startQuiz()">
+                <span data-i18n="welcome_start">Teste Başla</span>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- ══════════ QUIZ SCREEN ══════════ -->
+    <section id="screen-quiz" class="screen">
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <button class="btn-icon" id="btn-quiz-home" onclick="App.goHome()" title="Ana Sayfa">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                </button>
+                <div class="quiz-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 6.67%"></div>
+                    </div>
+                    <span class="progress-text" id="progress-text">1 / 15</span>
+                </div>
+            </div>
+
+            <div class="quiz-body" id="quiz-body">
+                <div class="question-number" id="question-number">01</div>
+                <h2 class="question-text" id="question-text">Yükleniyor...</h2>
+                <div class="quiz-options" id="quiz-options">
+                    <!-- Options are rendered dynamically by quiz.js -->
+                </div>
+            </div>
+
+            <div class="quiz-footer">
+                <button class="btn-secondary" id="btn-quiz-prev" onclick="Quiz.prevQuestion()" disabled>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                    <span data-i18n="quiz_prev">Önceki</span>
+                </button>
+                <button class="btn-primary" id="btn-quiz-next" onclick="Quiz.nextQuestion()" disabled>
+                    <span data-i18n="quiz_next">Sonraki</span>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ RESULT SCREEN ══════════ -->
+    <section id="screen-result" class="screen">
+        <div class="result-container">
+            <div class="result-badge" data-i18n="result_badge">SENİN PROFİLİN</div>
+
+            <div class="result-card" id="result-card">
+                <div class="result-icon" id="result-icon">🏛️</div>
+                <h2 class="result-title" id="result-title"></h2>
+                <p class="result-desc" id="result-desc"></p>
+            </div>
+
+            <div class="result-scores" id="result-scores">
+                <!-- Category score bars rendered by JS -->
+            </div>
+
+            <div class="result-actions">
+                <button class="btn-primary btn-glow" id="btn-see-guide" onclick="App.showGuide()">
+                    <span data-i18n="result_see_guide">Rehberimi Gör</span>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                </button>
+                <button class="btn-secondary" id="btn-retake-quiz" onclick="App.startQuiz()">
+                    <span data-i18n="result_retake">Testi Tekrar Çöz</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ GUIDE SCREEN ══════════ -->
+    <section id="screen-guide" class="screen">
+        <div class="guide-container">
+            <div class="guide-header">
+                <h1 class="guide-title" data-i18n="guide_title">Gezi Rehberiniz</h1>
+                <p class="guide-subtitle" id="guide-subtitle"></p>
+            </div>
+
+            <!-- Main Tabs -->
+            <div class="guide-tabs" id="guide-tabs">
+                <button class="tab active" data-tab="recommended" onclick="Guide.switchTab('recommended')">
+                    <span>📍</span> <span data-i18n="tab_recommended">Önerilen</span>
+                </button>
+                <button class="tab" data-tab="popular" onclick="Guide.switchTab('popular')">
+                    <span>🏆</span> <span data-i18n="tab_popular">En Popüler</span>
+                </button>
+                <button class="tab" data-tab="food" onclick="Guide.switchTab('food')">
+                    <span>🍽️</span> <span data-i18n="tab_food">Yemek</span>
+                </button>
+                <button class="tab" data-tab="all" onclick="Guide.switchTab('all')">
+                    <span>🗺️</span> <span data-i18n="tab_all">Tümü</span>
+                </button>
+            </div>
+
+            <!-- Food Sub-Tabs -->
+            <div class="food-tabs" id="food-tabs">
+                <button class="food-tab active" data-tier="0" onclick="Guide.filterFood(0)">
+                    <span data-i18n="food_all">Tümü</span>
+                </button>
+                <button class="food-tab tier-1" data-tier="1" onclick="Guide.filterFood(1)">
+                    <span>🍽️</span> <span data-i18n="food_restaurant">Restoran</span>
+                </button>
+                <button class="food-tab tier-2" data-tier="2" onclick="Guide.filterFood(2)">
+                    <span>🍔</span> <span data-i18n="food_fastfood">Fast Food</span>
+                </button>
+                <button class="food-tab tier-3" data-tier="3" onclick="Guide.filterFood(3)">
+                    <span>☕</span> <span data-i18n="food_cafe">Kafe</span>
+                </button>
+                <button class="food-tab tier-4" data-tier="4" onclick="Guide.filterFood(4)">
+                    <span>🍰</span> <span data-i18n="food_dessert">Tatlıcı</span>
+                </button>
+            </div>
+
+            <!-- Places Grid -->
+            <div class="places-grid" id="places-grid">
+                <!-- Place cards rendered by guide.js -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ DETAIL SCREEN ══════════ -->
+    <section id="screen-detail" class="screen">
+        <div class="detail-container">
+            <button class="btn-back detail-back" id="btn-detail-back" onclick="Guide.closeDetail()">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                <span data-i18n="detail_back">Geri</span>
+            </button>
+
+            <!-- Hero Image -->
+            <div class="detail-hero" id="detail-hero">
+                <div class="detail-hero-img" id="detail-hero-img"></div>
+                <div class="detail-hero-overlay">
+                    <span class="detail-category-badge" id="detail-category"></span>
+                    <h1 class="detail-name" id="detail-name"></h1>
+                    <div class="detail-location">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        <span id="detail-district"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-body">
+                <!-- Meta Row -->
+                <div class="detail-meta">
+                    <div class="meta-item">
+                        <span class="meta-label" data-i18n="detail_rating">Puan</span>
+                        <span class="meta-value" id="detail-rating"></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label" data-i18n="detail_price">Fiyat</span>
+                        <span class="meta-value" id="detail-price"></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label" data-i18n="detail_popularity">Popülerlik</span>
+                        <span class="meta-value" id="detail-popularity"></span>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div class="detail-section">
+                    <h3 class="section-title" data-i18n="detail_about">Hakkında</h3>
+                    <p class="detail-description" id="detail-description"></p>
+                </div>
+
+                <!-- Practical Info -->
+                <div class="detail-section" id="detail-info-section">
+                    <h3 class="section-title" data-i18n="detail_info">Pratik Bilgiler</h3>
+                    <div class="detail-info-grid" id="detail-info-grid">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Signature Dish (food only) -->
+                <div class="detail-section" id="detail-food-section" style="display:none;">
+                    <h3 class="section-title" data-i18n="detail_signature">Öne Çıkan Lezzetler</h3>
+                    <div class="detail-signature" id="detail-signature"></div>
+                </div>
+
+                <!-- Tips -->
+                <div class="detail-section" id="detail-tips-section">
+                    <h3 class="section-title" data-i18n="detail_tips">İpuçları</h3>
+                    <div class="detail-tips" id="detail-tips"></div>
+                </div>
+
+                <!-- Nearby Places -->
+                <div class="detail-section">
+                    <h3 class="section-title" data-i18n="detail_nearby">Yakın Mekanlar</h3>
+                    <div class="nearby-scroll" id="nearby-grid"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer id="app-footer">
+        <p>Istanbul Guide © 2026 — <span data-i18n="footer_text">Tüm hakları saklıdır</span></p>
+    </footer>
+
+    <!-- ── Scripts ── -->
+    <script src="js/languages.js"></script>
+    <script src="js/deneme2.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/guide.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
