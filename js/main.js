@@ -177,6 +177,25 @@
     document.body.requestPointerLock();
   });
 
+  // Skip button – directly start the game, bypass any intro/tutorial
+  var skipBtn = document.getElementById('skip-btn');
+  if (skipBtn) {
+    skipBtn.addEventListener('click', function () {
+      document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock;
+      document.body.requestPointerLock();
+    });
+  }
+
+  // Explore button – also starts the game immediately
+  var exploreBtn = document.getElementById('explore-btn');
+  if (exploreBtn) {
+    exploreBtn.addEventListener('click', function () {
+      document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock;
+      document.body.requestPointerLock();
+    });
+  }
+
+
   if (restartBtn) {
     restartBtn.addEventListener('click', function () {
       location.reload();
