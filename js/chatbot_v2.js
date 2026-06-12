@@ -4,6 +4,33 @@
 
     const Chatbot = (() => {
     let isOpen = false;
+    // Store info of the last place the bot described for follow‑up queries
+    let lastPlaceInfo = null;
+
+    // Helper to answer follow‑up questions about the last place
+    function handleFollowUp(query) {
+        if (!lastPlaceInfo) return null;
+        const q = query.toLowerCase();
+        if (/nerede|lokasyon|konum/.test(q)) {
+            const district = lastPlaceInfo.district ? `${lastPlaceInfo.district} ilçesinde` : '';
+            return `🤖 ${lastPlaceInfo.name.tr || lastPlaceInfo.name} ${district} bulunuyor.`;
+        }
+        if (/fiyat|ücret|para|ne kadar/.test(q)) {
+            const fee = typeof lastPlaceInfo.entranceFee === 'object' ? lastPlaceInfo.entranceFee.tr : (lastPlaceInfo.entranceFee || (lastPlaceInfo.priceLevel === 0 ? 'Ücretsiz' : '₺'.repeat(lastPlaceInfo.priceLevel)));
+            return `🤖 ${lastPlaceInfo.name.tr || lastPlaceInfo.name} için fiyat/ücret: ${fee}`;
+        }
+        if (/saat|açık|kapalı|zaman/.test(q)) {
+            const hours = typeof lastPlaceInfo.visitHours === 'object' ? lastPlaceInfo.visitHours.tr : lastPlaceInfo.visitHours;
+            return `🤖 ${lastPlaceInfo.name.tr || lastPlaceInfo.name} ziyaret saatleri: ${hours}`;
+        }
+        if (/ulaşım|nasıl|gitmek/.test(q)) {
+            const trans = typeof lastPlaceInfo.transport === 'object' ? lastPlaceInfo.transport.tr : (lastPlaceInfo.transport || '');
+            return `🤖 ${lastPlaceInfo.name.tr || lastPlaceInfo.name} için ulaşım: ${trans}`;
+        }
+        return null;
+    }
+
+    let isOpen = false;
     // Helper to get translation for chatbot UI
     function t(key, placeholders = {}) {
         const lang = App.getCurrentLang();
@@ -164,6 +191,8 @@
 
         if (foundPlace) {
             const name = foundPlace.name.tr || foundPlace.name;
+            // Remember this place for follow‑up queries
+            lastPlaceInfo = foundPlace;
             if (query.includes('ücret') || query.includes('fiyat') || query.includes('ne kadar') || query.includes('para')) {
                 const fee = typeof foundPlace.entranceFee === 'object' ? foundPlace.entranceFee.tr : (foundPlace.entranceFee || (foundPlace.priceLevel === 0 ? 'Ücretsiz' : '₺'.repeat(foundPlace.priceLevel)));
                 return `🤖 <strong>${name}</strong> için fiyat/ücret bilgisi: ${fee}`;
@@ -213,6 +242,9 @@
         }
 
         // 6. Absolute Fallback
+                // Attempt follow‑up using last place info
+        const follow = handleFollowUp(query);
+        if (follow) return follow;
         return "🤖 Ben Oyi! Bu soruyu devasa bilgi ağımda eşleştiremedim. Lütfen sorunuzu farklı kelimelerle ifade edin (örneğin '1453 yılında ne oldu' veya 'Ayasofya nerede')!";
     }
 
