@@ -67,7 +67,6 @@
   //  SPAWN NPCs INSIDE THE BUNKER
   // ═══════════════════════════════════════════════════
   var npcs = [];
-  var npcs = [];
   // Correct pilot characters: Teacher (Classroom), Thad (Hallway), Khan (Doors), N (Outside)
   var npcNames = ['Teacher', 'Thad', 'Khan', 'N'];
   var npcPositions = [
@@ -170,54 +169,99 @@
   }, 800);
 
   // ═══════════════════════════════════════════════════
-  //  START BUTTON & POINTER LOCK
+  //  UNIFIED GAME START FUNCTION
   // ═══════════════════════════════════════════════════
-  startBtn.addEventListener('click', function () {
-    document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock;
-    document.body.requestPointerLock();
+  var pointerLockSupported = !!(document.body.requestPointerLock || document.body.mozRequestPointerLock);
+  var gameStartedViaButton = false;
+
+  function startGame() {
+    if (gameStartedViaButton) return; // prevent double-start
+    gameStartedViaButton = true;
+
+    // Hide start screen, show game UI
+    startScreen.style.display = 'none';
+    crosshair.style.display = 'block';
+    hud.classList.add('active');
+    if (vignette) vignette.style.display = 'block';
+    if (camMode) camMode.style.display = 'block';
+
+    if (!gameState.started) {
+      gameState.started = true;
+      showStoryBanner('OUTPOST 3 — SIĞINAK', 'Copper-9 Yüzeyi Altı', 4000);
+    }
+
+    // Try pointer lock as a bonus (not required)
+    if (pointerLockSupported) {
+      try {
+        document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock;
+        document.body.requestPointerLock();
+      } catch (e) {
+        console.warn('Pointer lock not available:', e);
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════
+  //  BUTTON EVENT LISTENERS
+  // ═══════════════════════════════════════════════════
+
+  // BAŞLA button
+  startBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    startGame();
   });
 
-  // Skip button – directly start the game, bypass any intro/tutorial
+  // ATLA button
   var skipBtn = document.getElementById('skip-btn');
   if (skipBtn) {
-    skipBtn.addEventListener('click', function () {
-      document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock;
-      document.body.requestPointerLock();
+    skipBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      startGame();
     });
   }
 
-  // Explore button – also starts the game immediately
+  // KEŞFET button
   var exploreBtn = document.getElementById('explore-btn');
   if (exploreBtn) {
-    exploreBtn.addEventListener('click', function () {
-      document.body.requestPointerLock = document.body.requestPointerLock || document.body.mozRequestPointerLock;
-      document.body.requestPointerLock();
+    exploreBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      startGame();
     });
   }
 
-
+  // TEKRAR BAŞLA button
   if (restartBtn) {
     restartBtn.addEventListener('click', function () {
       location.reload();
     });
   }
 
+  // ═══════════════════════════════════════════════════
+  //  POINTER LOCK CHANGE HANDLER
+  // ═══════════════════════════════════════════════════
   document.addEventListener('pointerlockchange', function () {
     if (document.pointerLockElement === document.body) {
-      startScreen.style.display = 'none';
-      crosshair.style.display = 'block';
-      hud.classList.add('active');
-      if (vignette) vignette.style.display = 'block';
-      if (camMode) camMode.style.display = 'block';
-
-      if (!gameState.started) {
-        gameState.started = true;
-        showStoryBanner('OUTPOST 3 — SIĞINAK', 'Copper-9 Yüzeyi Altı', 4000);
+      // Pointer lock acquired — make sure game is started
+      if (!gameStartedViaButton) {
+        gameStartedViaButton = true;
+        startScreen.style.display = 'none';
+        crosshair.style.display = 'block';
+        hud.classList.add('active');
+        if (vignette) vignette.style.display = 'block';
+        if (camMode) camMode.style.display = 'block';
+        if (!gameState.started) {
+          gameState.started = true;
+          showStoryBanner('OUTPOST 3 — SIĞINAK', 'Copper-9 Yüzeyi Altı', 4000);
+        }
       }
     } else {
+      // Pointer lock lost
       crosshair.style.display = 'none';
       if (window.DialogueUI && !window.DialogueUI.isOpen()) {
-        startScreen.style.display = 'flex';
+        // Don't show start screen if game already started — just pause indicator
+        if (!gameState.started) {
+          startScreen.style.display = 'flex';
+        }
         hud.classList.remove('active');
         if (vignette) vignette.style.display = 'none';
         if (camMode) camMode.style.display = 'none';
@@ -315,7 +359,8 @@
     var isPointerLocked = (document.pointerLockElement === document.body);
     var isDialogueOpen = (window.DialogueUI && window.DialogueUI.isOpen());
 
-    if (!isPointerLocked && !isDialogueOpen) {
+    // Allow game loop to run if pointer lock is active OR game was started via button
+    if (!isPointerLocked && !gameStartedViaButton && !isDialogueOpen) {
       return;
     }
 
