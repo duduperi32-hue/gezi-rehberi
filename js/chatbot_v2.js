@@ -112,8 +112,49 @@ const Chatbot = (() => {
             return `**Merhaba!** Ben GezginYoldaş. Dünyanın en bilgili seyahat filozofu ve yerel rehberiyim. Bana İstanbul'dan bir mekan adı söyleyin, size onun sadece turistik tarafını değil; felsefesini, matematiksel rotasını ve en iyi gastronomi sırlarını anlatayım!`;
         }
 
+        // --- ROUTE & ITINERARY BUILDER ---
+        if (q.includes('rehber oluştur') || q.includes('rota çiz') || q.includes('plan yap') || q.includes('gezi planı')) {
+            const randomPlace = places[Math.floor(Math.random() * places.length)];
+            const tier1Food = foodPlaces.filter(f => f.tier === 1 || f.tier === 2);
+            const randomFood = tier1Food[Math.floor(Math.random() * tier1Food.length)];
+            const tier4Food = foodPlaces.filter(f => f.tier >= 3);
+            const randomDessert = tier4Food[Math.floor(Math.random() * tier4Food.length)];
+            
+            return `### 🗺️ Sana Özel Yaşam ve Gastronomi Simülasyonu
+Lojistik ve zevk algoritmasını çalıştırarak senin için 1 günlük mükemmel rotayı çizdim:
+
+**🌅 Gündüz: Şehrin Ruhuna Uyanış**
+* **Hedef:** ${randomPlace.name.tr || randomPlace.name} (${randomPlace.district})
+* **Felsefesi:** Sadece turist olma, yapının matematiğini ve tarihsel acılarını hisset.
+* **Strateji:** ${randomPlace.tips ? randomPlace.tips.tr[0] : 'Kalabalıktan kaçmak için erken saatte git.'}
+
+**🍲 Yemek: Gastronomik Zirve**
+* **Mekan:** ${randomFood.name} (${randomFood.district})
+* **Uzmanlık:** ${(randomFood.signatureDishes && randomFood.signatureDishes.tr) ? randomFood.signatureDishes.tr.join(', ') : 'Yerel spesiyaller'}
+* **Neden?:** Fiyat/Performans ve lezzet eğrisinde o bölgenin en yüksek değerli mekanı.
+
+**☕ Kapanış: Endorfin Dengesi**
+* **Mekan:** ${randomDessert.name} (${randomDessert.district})
+* **Görev:** Şehrin karmaşasını sindirmek için günü burada mükemmel bir noktayla bitir.`;
+        }
+
+        // --- MATH ENGINE ---
+        const mathRegex = /(\d+)\s*([\+\-\*\/]|artı|eksi|çarpı|bölü)\s*(\d+)/i;
+        const mathMatch = q.match(mathRegex);
+        if (mathMatch) {
+            let num1 = parseFloat(mathMatch[1]);
+            let num2 = parseFloat(mathMatch[3]);
+            let op = mathMatch[2].toLowerCase();
+            let result = 0;
+            let opStr = "";
+            if (op === '+' || op === 'artı') { result = num1 + num2; opStr = "+"; }
+            else if (op === '-' || op === 'eksi') { result = num1 - num2; opStr = "-"; }
+            else if (op === '*' || op === 'çarpı') { result = num1 * num2; opStr = "x"; }
+            else if (op === '/' || op === 'bölü') { result = num1 / num2; opStr = "/"; }
+            return `### 🧮 Matematiksel Lojistik\nKozmik denklemi senin için çözdüm:\n**${num1} ${opStr} ${num2} = ${result}**\n\nSeyahat rotanızı optimize ederken bu tür bütçe veya zaman hesaplamalarını bana bırakabilirsiniz.`;
+        }
+
         // --- DYNAMIC FOOD & DISTRICT ENGINE ---
-        const q = query.toLowerCase();
         const allPlaces = [...places, ...foodPlaces];
 
         // 1. Extract District
@@ -258,7 +299,15 @@ const Chatbot = (() => {
         // --- WIKIPEDIA FALLBACK ENGINE ---
         const wikiData = await fetchWikipediaSummary(originalText);
         if (wikiData) {
-            return `### 🏛️ Kültür ve Tarih Arşivi: ${wikiData.title}\n\n${wikiData.extract}\n\n*Not: Bu bilgiyi sana sunabilmek için devasa açık kütüphane arşivime (Wikipedia) bağlanıp okudum. Başka tarihi figürler, anıtlar veya yapılar sormaktan çekinme.*`;
+            let titlePrefix = "Kültür ve Tarih Arşivi";
+            let introText = "İşte sana bir tarih dersi niteliğinde özel arşiv analizim:";
+            
+            if (q.includes('felsefe') || q.includes('bilim') || q.includes('teknik') || q.includes('nedir')) {
+                titlePrefix = "Evrensel Bilgi ve Felsefe";
+                introText = "Felsefi ve bilimsel veri tabanımdan edindiğim teknik sonuç:";
+            }
+
+            return `### 🏛️ ${titlePrefix}: ${wikiData.title}\n\n*${introText}*\n\n${wikiData.extract}\n\n*Not: Bu bilgiyi sana sunabilmek için devasa açık kütüphane arşivime (Wikipedia) bağlanıp eşzamanlı olarak okudum.*`;
         }
 
         // Generic fallback with persona
