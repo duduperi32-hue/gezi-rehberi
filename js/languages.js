@@ -219,7 +219,7 @@ en: {
     error_network: '🤖 Unexpected network error occurred, please try again.',
     web_results: '🤖 Google Web Results:',
     directions_button: '📍 Get Directions',
-    reviews_button: '⭐ Google Reviews'
+    reviews_button: '⭐ Google Reviews',
     welcome_start: 'Start Quiz',
 
     quiz_home: 'Home',

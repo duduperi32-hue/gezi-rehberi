@@ -30,7 +30,6 @@
         return null;
     }
 
-    let isOpen = false;
     // Helper to get translation for chatbot UI
     function t(key, placeholders = {}) {
         const lang = App.getCurrentLang();
@@ -41,8 +40,6 @@
         });
         return text;
     }
-    let isOpen = false;
-
     // Toggle chat window
     function toggle() {
         const widget = document.getElementById('chatbot-widget');
@@ -147,7 +144,9 @@
             return `🤖 Şu an saat: <strong>${new Date().toLocaleTimeString('tr-TR')}</strong>`;
         }
         if (query.includes('bugün günlerden ne') || query.includes('tarih ne')) {
-            return `🤖 Bugünün tarihi: <s        const faqBrain = {
+            return `🤖 Bugünün tarihi: <strong>${new Date().toLocaleDateString('tr-TR')}</strong>`;
+        }
+        const faqBrain = {
             "(nasılsın|naber|ne haber)": "Ben yapay bir zeka asistanıyım, dolayısıyla her zaman mükemmelim! Sana İstanbul'u anlatmak veya aklındaki herhangi bir soruyu cevaplamak için buradayım. Sen nasılsın?",
             "(adın ne|sen kimsin|ismin ne)": "Benim adım <strong>Oyi</strong>! Ben İstanbul Gezi Rehberi'nin özel ve süper zeki asistanıyım. Sorularını cevaplamak için varım.",
             "(teşekkür|sağol|eyvallah)": "Rica ederim! Başka yardım edebileceğim bir konu varsa buradayım.",
@@ -165,10 +164,8 @@
             // General culture patterns
             "(kimdir|nedir|tanımı nedir|açıklama)": "Bu konuyla ilgili geniş bir açıklamayı Wikipedia üzerinden getireceğim. Lütfen bekleyin...",
             "(ne zaman|tarihinde|tarihi)": "Belirtilen tarih olayını Wikipedia'dan özetleyeceğim.",
-            "(kaç|kaç tane|miktar)": "Bu soruya sayı olarak cevap vermeye çalışacağım, lütfen net bir ifade kullanın."
-        };esi için Mandabatmaz veya Fazıl Bey'in Türk Kahvesi şahanedir. Manzaralı bir çay isterseniz Pierre Loti Tepesi sizi bekliyor.",
-            "(fast food|hızlı yemek|dürüm|hamburger)": "Hızlı ve lezzetli bir şeyler arıyorsanız Kızılkayalar'da Islak Hamburger, Borsam Taşfırın'da lahmacun veya Eminönü'nde meşhur Balık Ekmek yiyebilirsiniz."
         };
+
 
         for (const [pattern, answer] of Object.entries(faqBrain)) {
             const regex = new RegExp(pattern, "i");
