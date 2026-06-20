@@ -1,4 +1,4 @@
-const CACHE_NAME = 'istanbul-gezisi-v12'; // Bump to v12 to FORCE update
+const CACHE_NAME = 'istanbul-gezisi-v13'; // Bump to v13 to FORCE update
 const urlsToCache = [
   './',
   './index.html',
