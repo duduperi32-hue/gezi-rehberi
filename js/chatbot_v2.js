@@ -37,25 +37,11 @@ Kullanıcıya plan sunarken her zaman şu yapıyı kullan:
 4. 💡 Hayati Yerel İpuçları & Güvenlik Uyarıları
 `;
 
+    // Buraya kendi API anahtarınızı girin. (Aksi halde chatbot hata verir)
+    const API_KEY = '';
+
     function getApiKey() {
-        return localStorage.getItem('istanbul_gemini_key') || '';
-    }
-
-    function toggleSettings() {
-        const panel = document.getElementById('chatbot-settings');
-        if (panel.style.display === 'none') {
-            panel.style.display = 'block';
-            document.getElementById('gemini-api-key').value = getApiKey();
-        } else {
-            panel.style.display = 'none';
-        }
-    }
-
-    function saveApiKey() {
-        const key = document.getElementById('gemini-api-key').value.trim();
-        localStorage.setItem('istanbul_gemini_key', key);
-        toggleSettings();
-        appendMessage('🎒 API Anahtarı başarıyla kaydedildi! Benimle harika planlar yapmaya başlayabilirsiniz.', 'bot');
+        return API_KEY;
     }
 
     // Toggle chat window
@@ -112,7 +98,7 @@ Kullanıcıya plan sunarken her zaman şu yapıyı kullan:
         if (!apiKey) {
             appendMessage(text, 'user');
             input.value = '';
-            appendMessage('🎒 Benimle sohbet edebilmeniz için Ayarlar (⚙️) menüsünden Gemini API Anahtarınızı girmelisiniz.', 'bot');
+            appendMessage('🎒 Sisteme henüz bir API anahtarı eklenmemiş. Lütfen chatbot_v2.js dosyasındaki API_KEY değişkenine anahtarınızı girin.', 'bot');
             return;
         }
         
@@ -193,8 +179,6 @@ Kullanıcıya plan sunarken her zaman şu yapıyı kullan:
     return {
         toggle,
         handleEnter,
-        sendMessage,
-        toggleSettings,
-        saveApiKey
+        sendMessage
     };
 })();

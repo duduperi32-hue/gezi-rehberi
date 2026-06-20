@@ -337,17 +337,7 @@
     <div id="chatbot-widget" class="chatbot-widget hidden">
         <div class="chatbot-header" id="chatbot-header" style="cursor: grab; display: flex; justify-content: space-between; align-items: center;">
             <h3 style="margin: 0;">🎒 GezginYoldaş</h3>
-            <div>
-                <button class="btn-close-chat" onclick="Chatbot.toggleSettings()" style="margin-right: 5px; font-size: 16px;" title="API Ayarları">⚙️</button>
-                <button class="btn-close-chat" onclick="Chatbot.toggle()">×</button>
-            </div>
-        </div>
-        
-        <!-- API Settings Panel -->
-        <div id="chatbot-settings" style="display: none; padding: 15px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle);">
-            <p style="font-size: 12px; margin-top: 0; color: var(--text-secondary);">GezginYoldaş'ın çalışması için Google Gemini API Anahtarınızı girin:</p>
-            <input type="text" id="gemini-api-key" placeholder="AIzaSy..." style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; margin-bottom: 10px;">
-            <button class="btn-primary" onclick="Chatbot.saveApiKey()" style="width: 100%; padding: 8px; justify-content: center; font-size: 13px;">Kaydet</button>
+            <button class="btn-close-chat" onclick="Chatbot.toggle()">×</button>
         </div>
 
         <div class="chatbot-messages" id="chatbot-messages">
