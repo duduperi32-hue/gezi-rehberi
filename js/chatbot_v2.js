@@ -157,6 +157,33 @@ const Chatbot = (() => {
 
         // --- END OF DYNAMIC ENGINE ---
 
+        // --- HISTORICAL & CULTURAL QUERY ENGINE ---
+        const historyMap = {
+            'sinan': {
+                keywords: ['mimar sinan', 'sinanın', 'sinan', 'süleymaniye', 'mimar'],
+                reply: `### 🏛️ Mimar Sinan'ın Matematiksel Dehası\nSüleymaniye Camii başta olmak üzere, Şehzadebaşı, Mihrimah Sultan ve Rüstem Paşa Camileri onun en büyük eserlerindendir. Sinan sadece bir mimar değil, yapıların akustiğini ve hava sirkülasyonunu asırlar öncesinden çözen bir mühendislik filozofudur. Şehirdeyseniz **Süleymaniye Camii**'ne gitmek lojistik ve kültürel açıdan en büyük önceliğiniz olmalıdır.`
+            },
+            'osmanli': {
+                keywords: ['osmanlı', 'osmanli', 'osmanlıdan kalma', 'padişah', 'saray'],
+                reply: `### 🏛️ Osmanlı'nın Tarihsel Doktrini\nİstanbul'daki Osmanlı mirası devasadır ve imparatorluğun psikolojik evrimini yansıtır:\n- **Klasik Dönem:** Topkapı Sarayı, Süleymaniye ve Sultanahmet Camii (Güç ve Asalet)\n- **Geç Dönem:** Dolmabahçe ve Çırağan Sarayı (Batılılaşma ve İhtişam)`
+            },
+            'bizans': {
+                keywords: ['bizans', 'roma', 'bizanstan kalma', 'sarnıç', 'yerebatan'],
+                reply: `### 🏛️ Bizans'ın Çok Katmanlı Ruhu\nİstanbul'da Roma/Bizans dönemine ait en ihtişamlı mühendislik kalıntıları şunlardır:\n- **Ayasofya (M.S. 537):** Dünya mimarlık tarihini değiştiren şaheser.\n- **Yerebatan Sarnıcı:** Suyun matematiğini yeraltına taşıyan efsanevi saray.\n- **Galata Kulesi:** Ceneviz/Bizans döneminin silüet harikası.`
+            },
+            'ataturk': {
+                keywords: ['atatürk', 'mustafa kemal', 'ata'],
+                reply: `### 🏛️ Cumhuriyet'in İzleri\nUlu Önder Mustafa Kemal Atatürk'ün İstanbul'daki en önemli izlerinden biri **Dolmabahçe Sarayı**'dır. 10 Kasım 1938'de hayata gözlerini yumduğu 71 numaralı oda, tarihi ve felsefi olarak ziyaret edilmesi gereken en özel noktalardandır.`
+            }
+        };
+
+        for (const [key, data] of Object.entries(historyMap)) {
+            if (data.keywords.some(k => q.includes(k))) {
+                return data.reply;
+            }
+        }
+        // --- END OF HISTORICAL ENGINE ---
+
         // Search in places (fallback for general location names)
         let foundPlace = null;
         for (const p of allPlaces) {
