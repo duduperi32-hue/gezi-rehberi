@@ -191,7 +191,10 @@ tr: {
     nav_home: 'Ana Sayfa',
     nav_guide: 'Rehber',
     nav_chat: 'Oyi',
-    nav_profile: 'Profil'
+    nav_profile: 'Profil',
+    tab_visited: 'Geçmiş',
+    btn_mark_visited: '✅ Gezdim',
+    btn_unmark_visited: '❌ Gezmedim'
 },
 
 /* ╔═══════════════════════════╗
@@ -289,7 +292,10 @@ en: {
     detail_tips: 'Tips', detail_nearby: 'Nearby Places', detail_hours: 'Visit Hours',
     detail_entrance: 'Entrance Fee', detail_transport: 'Transport',
     detail_free: 'Free', detail_very_popular: 'Very Popular', detail_popular: 'Popular', detail_moderate: 'Moderate',
-    footer_text: 'All rights reserved'
+    footer_text: 'All rights reserved',
+    tab_visited: 'History',
+    btn_mark_visited: '✅ Visited',
+    btn_unmark_visited: '❌ Not Visited'
 },
 
 /* ╔═══════════════════════════╗
@@ -375,7 +381,10 @@ de: {
     detail_tips: 'Tipps', detail_nearby: 'In der Nähe', detail_hours: 'Besuchszeiten',
     detail_entrance: 'Eintritt', detail_transport: 'Anfahrt',
     detail_free: 'Kostenlos', detail_very_popular: 'Sehr beliebt', detail_popular: 'Beliebt', detail_moderate: 'Mittel',
-    footer_text: 'Alle Rechte vorbehalten'
+    footer_text: 'Alle Rechte vorbehalten',
+    tab_visited: 'Verlauf',
+    btn_mark_visited: '✅ Besucht',
+    btn_unmark_visited: '❌ Nicht besucht'
 },
 
 /* ╔═══════════════════════════╗
@@ -460,7 +469,10 @@ fr: {
     detail_tips: 'Conseils', detail_nearby: 'À proximité', detail_hours: 'Horaires de visite',
     detail_entrance: "Droit d'entrée", detail_transport: 'Transport',
     detail_free: 'Gratuit', detail_very_popular: 'Très populaire', detail_popular: 'Populaire', detail_moderate: 'Modéré',
-    footer_text: 'Tous droits réservés'
+    footer_text: 'Tous droits réservés',
+    tab_visited: 'Historique',
+    btn_mark_visited: '✅ Visité',
+    btn_unmark_visited: '❌ Non visité'
 },
 
 /* ╔═══════════════════════════╗
@@ -546,7 +558,10 @@ ar: {
     detail_tips: 'نصائح', detail_nearby: 'أماكن قريبة', detail_hours: 'ساعات الزيارة',
     detail_entrance: 'رسوم الدخول', detail_transport: 'المواصلات',
     detail_free: 'مجاني', detail_very_popular: 'شائع جداً', detail_popular: 'شائع', detail_moderate: 'متوسط',
-    footer_text: 'جميع الحقوق محفوظة'
+    footer_text: 'جميع الحقوق محفوظة',
+    tab_visited: 'السجل',
+    btn_mark_visited: '✅ زرت',
+    btn_unmark_visited: '❌ لم أزر'
 },
 
 /* ╔═══════════════════════════╗
@@ -632,7 +647,10 @@ ru: {
     detail_tips: 'Советы', detail_nearby: 'Рядом', detail_hours: 'Часы посещения',
     detail_entrance: 'Входная плата', detail_transport: 'Транспорт',
     detail_free: 'Бесплатно', detail_very_popular: 'Очень популярно', detail_popular: 'Популярно', detail_moderate: 'Умеренно',
-    footer_text: 'Все права защищены'
+    footer_text: 'Все права защищены',
+    tab_visited: 'История',
+    btn_mark_visited: '✅ Посетил',
+    btn_unmark_visited: '❌ Не посетил'
 }
 
 }; // end translations

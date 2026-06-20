@@ -7,6 +7,8 @@ const Guide = (() => {
     let currentFoodTier = 0;
     let userProfile = null;
     let lastScreen = 'guide';
+    let currentDetailItem = null;
+    let visitedPlaces = new Set(JSON.parse(localStorage.getItem('istanbul_visited') || '[]'));
 
     // ── Translation helper ──
     function t(key) {
@@ -105,6 +107,8 @@ const Guide = (() => {
                 return getPopularPlaces();
             case 'food':
                 return getFoodPlaces();
+            case 'visited':
+                return getVisitedPlaces();
             case 'all':
                 return getAllPlaces();
             default:
@@ -159,6 +163,11 @@ const Guide = (() => {
         return foodPlaces.filter(p => p.tier === currentFoodTier);
     }
 
+    // ── Visited places ──
+    function getVisitedPlaces() {
+        return [...places, ...foodPlaces].filter(p => visitedPlaces.has(p.id));
+    }
+
     // ── All places ──
     function getAllPlaces() {
         return [...places, ...foodPlaces];
@@ -191,10 +200,13 @@ const Guide = (() => {
             : t(`cat_${getCategoryTranslationKey(category)}`);
 
         const animDelay = Math.min(index * 0.05, 0.5);
+        const isVisited = visitedPlaces.has(item.id);
+        const visitedBadge = isVisited ? `<div style="position: absolute; top: 10px; right: 10px; background: rgba(0, 200, 83, 0.9); color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 14px; z-index: 2;">✅</div>` : '';
 
         return `
         <div class="place-card" onclick="Guide.showDetail('${item.id}', ${isFood})" style="animation-delay: ${animDelay}s">
             <div class="card-image" style="background-image: ${item.image || 'var(--bg-secondary)'}">
+                ${visitedBadge}
                 ${isFood
                     ? `<span class="card-tier tier-${item.tier}">${item.emoji || ''} ${tierLabels[item.tier] || ''}</span>`
                     : `<span class="card-category cat-${category}">${categoryLabel}</span>`
@@ -236,7 +248,9 @@ const Guide = (() => {
         if (!item) return;
 
         lastScreen = 'guide';
+        currentDetailItem = item;
         renderDetail(item, isFood);
+        updateVisitedButtonState();
         App.switchScreen('detail');
     }
 
@@ -393,7 +407,41 @@ const Guide = (() => {
 
     // ── Close detail, go back to guide ──
     function closeDetail() {
+        currentDetailItem = null;
         App.switchScreen(lastScreen);
+    }
+
+    // ── Update visited button state ──
+    function updateVisitedButtonState() {
+        if (!currentDetailItem) return;
+        const btn = document.getElementById('btn-mark-visited');
+        if (!btn) return;
+        const isVisited = visitedPlaces.has(currentDetailItem.id);
+        
+        if (isVisited) {
+            btn.innerHTML = t('btn_unmark_visited');
+            btn.style.background = 'rgba(244, 67, 54, 0.2)';
+            btn.style.borderColor = 'rgba(244, 67, 54, 0.5)';
+        } else {
+            btn.innerHTML = t('btn_mark_visited');
+            btn.style.background = 'rgba(0, 200, 83, 0.2)';
+            btn.style.borderColor = 'rgba(0, 200, 83, 0.5)';
+        }
+    }
+
+    // ── Toggle visited state ──
+    function toggleVisited() {
+        if (!currentDetailItem) return;
+        if (visitedPlaces.has(currentDetailItem.id)) {
+            visitedPlaces.delete(currentDetailItem.id);
+        } else {
+            visitedPlaces.add(currentDetailItem.id);
+        }
+        localStorage.setItem('istanbul_visited', JSON.stringify([...visitedPlaces]));
+        updateVisitedButtonState();
+        
+        // Re-render places silently to update checks
+        renderPlaces();
     }
 
     // ── Refresh for language change ──
@@ -412,6 +460,7 @@ const Guide = (() => {
         showDetail,
         closeDetail,
         renderPlaces,
-        refreshLanguage
+        refreshLanguage,
+        toggleVisited
     };
 })();

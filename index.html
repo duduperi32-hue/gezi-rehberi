@@ -224,6 +224,9 @@
                 <button class="tab" data-tab="all" onclick="Guide.switchTab('all')">
                     <span>🗺️</span> <span data-i18n="tab_all">Tümü</span>
                 </button>
+                <button class="tab" data-tab="visited" onclick="Guide.switchTab('visited')">
+                    <span>✅</span> <span data-i18n="tab_visited">Geçmiş</span>
+                </button>
             </div>
 
             <!-- Food Sub-Tabs -->
@@ -273,6 +276,7 @@
                     <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
                         <a href="#" id="btn-directions" target="_blank" class="btn-primary" data-i18n="directions_button" style="display: inline-flex; font-size: 14px; padding: 10px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"></a>
                         <a href="#" id="btn-reviews" target="_blank" class="btn-secondary" data-i18n="reviews_button" style="display: inline-flex; font-size: 14px; padding: 10px 20px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 50px;"></a>
+                        <button id="btn-mark-visited" onclick="Guide.toggleVisited()" class="btn-secondary" data-i18n="btn_mark_visited" style="display: inline-flex; font-size: 14px; padding: 10px 20px; border-radius: 50px; background: rgba(0, 200, 83, 0.2); border: 1px solid rgba(0, 200, 83, 0.5); color: #fff; cursor: pointer;">✅ Gezdim</button>
                     </div>
                 </div>
             </div>
