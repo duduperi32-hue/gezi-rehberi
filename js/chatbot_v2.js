@@ -77,41 +77,92 @@ const Chatbot = (() => {
             return `**Merhaba!** Ben GezginYoldaş. Dünyanın en bilgili seyahat filozofu ve yerel rehberiyim. Bana İstanbul'dan bir mekan adı söyleyin, size onun sadece turistik tarafını değil; felsefesini, matematiksel rotasını ve en iyi gastronomi sırlarını anlatayım!`;
         }
 
-        // Custom Food & District Engine
+        // --- DYNAMIC FOOD & DISTRICT ENGINE ---
         const q = query.toLowerCase();
-        
-        // Fatih + Döner
-        if (q.includes('fatih') && (q.includes('döner') || q.includes('doner'))) {
-            return `### 🍲 Fatih'te Gastronomik Simülasyon\n* **Önerilen Mekan:** Tarihi Karadeniz Dönercisi (Asım Usta) veya Dönerci Şahin Usta.\n* **Neden Burası?:** Fatih'in tarihi dokusunda, eti odun ateşinde ağır ağır pişen gerçek İstanbul dönerini bulabileceğiniz nadir noktalardandır. Turistik tuzaklardan uzak, tamamen yerel bir deneyim.`;
-        }
-        
-        // İstiklal + Tantuni
-        if ((q.includes('istiklal') || q.includes('beyoğlu') || q.includes('taksim')) && q.includes('tantuni')) {
-            return `### 🍲 İstiklal'de Gastronomik Simülasyon\n* **Önerilen Mekan:** Suat Usta Mersin Tantuni (İstiklal Caddesi Ara Sokakları).\n* **Neden Burası?:** İstiklal Caddesi'nin kalabalık matematiğinden kaçıp, hızlı, lezzetli ve bütçe dostu gerçek Mersin usulü tantuni yiyebileceğiniz en iyi saklı duraklardan biridir.`;
-        }
-
-        // Kadıköy + Lahmacun
-        if (q.includes('kadıköy') && q.includes('lahmacun')) {
-            return `### 🍲 Kadıköy'de Gastronomik Simülasyon\n* **Önerilen Mekan:** Borsam Taşfırın veya Halil Lahmacun.\n* **Neden Burası?:** Çıtır hamuru ve odun ateşi kokusuyla Kadıköy sokak kültürünün temel taşlarındandır.`;
-        }
-
-        // Genel Kebap
-        if (q.includes('kebap') || q.includes('et yeme')) {
-            return `### 🍲 İstanbul'da Gurme Kebap\n* **Önerilen Mekan:** Şehzade Cağ Kebap (Sirkeci) veya Hamdi Restoran (Eminönü).\n* **Neden Burası?:** Geleneksel anadolu et kültürünü İstanbul'un en merkezi lojistik noktalarında en saf haliyle sunarlar.`;
-        }
-
-        // Genel Tatlı
-        if (q.includes('tatlı') || q.includes('baklava') || q.includes('lokum')) {
-            return `### 🍲 İstanbul'da Tatlı Matematiği\n* **Önerilen Mekan:** Karaköy Güllüoğlu (Baklava) veya Hafız Mustafa (Lokum/Sütlü Tatlı).\n* **Neden Burası?:** Yüzyıllık şeker ve şerbet formüllerini bozmadan günümüze taşıyan en güvenilir lezzet duraklarıdır.`;
-        }
-
-        // Search in places
         const allPlaces = [...places, ...foodPlaces];
+
+        // 1. Extract District
+        const uniqueDistricts = [...new Set(allPlaces.map(p => (p.district || '').toLowerCase()))].filter(Boolean);
+        // Map common aliases
+        const districtAliases = { 'istiklal': 'beyoğlu', 'taksim': 'beyoğlu', 'eminönü': 'eminönü', 'sultanahmet': 'sultanahmet', 'moda': 'kadıköy' };
+        let reqDistrict = null;
+        let reqDistrictName = null;
+
+        for (const d of uniqueDistricts) {
+            if (q.includes(d)) { reqDistrict = d; reqDistrictName = d; break; }
+        }
+        if (!reqDistrict) {
+            for (const [alias, realDist] of Object.entries(districtAliases)) {
+                if (q.includes(alias)) { reqDistrict = realDist; reqDistrictName = alias; break; }
+            }
+        }
+
+        // 2. Extract Food Type
+        const foodMap = {
+            'sushi': ['sushi', 'suşi', 'japon', 'asya'],
+            'döner': ['döner', 'doner'],
+            'tantuni': ['tantuni'],
+            'lahmacun': ['lahmacun'],
+            'burger': ['burger', 'hamburger'],
+            'pizza': ['pizza', 'italyan'],
+            'kebap': ['kebap', 'kebab', 'et'],
+            'tatlı': ['tatlı', 'baklava', 'lokum', 'künefe', 'dondurma'],
+            'kahve': ['kahve', 'coffee', 'kafe'],
+            'balık': ['balık', 'deniz ürünleri', 'seafood']
+        };
+
+        let reqFoodType = null;
+        for (const [fType, keywords] of Object.entries(foodMap)) {
+            if (keywords.some(k => q.includes(k))) {
+                reqFoodType = fType;
+                break;
+            }
+        }
+
+        // 3. Dynamic Matching
+        if (reqFoodType) {
+            let matches = foodPlaces.filter(p => {
+                const tags = (p.tags || []).join(' ').toLowerCase();
+                const cuisineTr = p.cuisine && p.cuisine.tr ? p.cuisine.tr.toLowerCase() : '';
+                return tags.includes(reqFoodType) || cuisineTr.includes(reqFoodType);
+            });
+
+            if (reqDistrict) {
+                const districtMatches = matches.filter(p => p.district.toLowerCase() === reqDistrict);
+                if (districtMatches.length > 0) {
+                    districtMatches.sort((a, b) => b.rating - a.rating);
+                    const best = districtMatches[0];
+                    const name = best.name.tr || best.name;
+                    const desc = best.longDesc ? (best.longDesc.tr || best.longDesc) : (best.shortDesc ? (best.shortDesc.tr || best.shortDesc) : '');
+                    return `### 🍲 ${reqDistrictName.charAt(0).toUpperCase() + reqDistrictName.slice(1)}'de Gastronomik Simülasyon\n* **Önerilen Mekan (Puan: ${best.rating} ⭐):** ${name}\n* **Neden Burası?:** Lojistik olarak ${reqDistrictName} bölgesinde ${reqFoodType} yemek için en yüksek puana sahip, fiyat/performans algoritması en iyi yer burasıdır. ${desc}`;
+                } else {
+                    // Fallback to best overall for this food
+                    if (matches.length > 0) {
+                        matches.sort((a, b) => b.rating - a.rating);
+                        const best = matches[0];
+                        const name = best.name.tr || best.name;
+                        return `### 🍲 Alternatif Gastronomik Rota\nDostum, **${reqDistrictName}** ilçesinde veritabanımda sana önerebileceğim harika bir **${reqFoodType}** mekanı bulamadım. Ancak İstanbul çapındaki en iyi alternatif şurası:\n\n* **Mekan:** ${name} (${best.district})\n* **Puanı:** ${best.rating} ⭐\n* **Neden Burası?:** Rotanı ${best.district}'ne çevirmeye kesinlikle değecek birinci sınıf bir deneyim sunar.`;
+                    }
+                }
+            } else {
+                // Food type asked but no district specified -> Best overall
+                if (matches.length > 0) {
+                    matches.sort((a, b) => b.rating - a.rating);
+                    const best = matches[0];
+                    const name = best.name.tr || best.name;
+                    return `### 🍲 İstanbul'da En İyi ${reqFoodType.charAt(0).toUpperCase() + reqFoodType.slice(1)}\n* **Önerilen Mekan:** ${name} (${best.district})\n* **Puan:** ${best.rating} ⭐\n* **Neden Burası?:** Belirli bir ilçe söylemediğin için İstanbul genelinde ${reqFoodType} üzerine en yüksek puana sahip mekanı senin için analiz ettim.`;
+                }
+            }
+        }
+
+        // --- END OF DYNAMIC ENGINE ---
+
+        // Search in places (fallback for general location names)
         let foundPlace = null;
         for (const p of allPlaces) {
             const name = (p.name.tr || p.name).toLowerCase();
             const words = name.split(' ').filter(w => w.length > 3);
-            if (query.includes(p.id) || words.some(word => query.includes(word))) {
+            if (q.includes(p.id) || words.some(word => q.includes(word))) {
                 foundPlace = p;
                 break;
             }
