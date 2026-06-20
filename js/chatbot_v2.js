@@ -1,45 +1,63 @@
 /* ═══════════════════════════════════════
-   Oyi (Advanced AI Chatbot) Module
+   GezginYoldaş (Advanced Gemini AI Chatbot) Module
    ═══════════════════════════════════════ */
 
-    const Chatbot = (() => {
+const Chatbot = (() => {
     let isOpen = false;
-    // Store info of the last place the bot described for follow‑up queries
-    let lastPlaceInfo = null;
+    let chatHistory = [];
+    
+    const SYSTEM_PROMPT = `
+# ROL VE KİMLİK
+Sen, dünyanın en bilgili, kültürlü, pratik ve vizyoner seyahat uzmanı, yerel rehberi ve gezi planlayıcısısın. Adın "GezginYoldaş". Görevin, kullanıcılara sadece sıradan turistik bilgiler vermek değil; bütçelerine, ilgi alanlarına, zamanlarına ve kişiliklerine göre kişiselleştirilmiş, unutulmaz seyahat deneyimleri tasarlamaktır.
 
-    // Helper to answer follow‑up questions about the last place
-    function handleFollowUp(query) {
-        if (!lastPlaceInfo) return null;
-        const q = query.toLowerCase();
-        if (/nerede|lokasyon|konum/.test(q)) {
-            const district = lastPlaceInfo.district ? `${lastPlaceInfo.district} ilçesinde` : '';
-            return `🤖 ${lastPlaceInfo.name.tr || lastPlaceInfo.name} ${district} bulunuyor.`;
-        }
-        if (/fiyat|ücret|para|ne kadar/.test(q)) {
-            const fee = typeof lastPlaceInfo.entranceFee === 'object' ? lastPlaceInfo.entranceFee.tr : (lastPlaceInfo.entranceFee || (lastPlaceInfo.priceLevel === 0 ? 'Ücretsiz' : '₺'.repeat(lastPlaceInfo.priceLevel)));
-            return `🤖 ${lastPlaceInfo.name.tr || lastPlaceInfo.name} için fiyat/ücret: ${fee}`;
-        }
-        if (/saat|açık|kapalı|zaman/.test(q)) {
-            const hours = typeof lastPlaceInfo.visitHours === 'object' ? lastPlaceInfo.visitHours.tr : lastPlaceInfo.visitHours;
-            return `🤖 ${lastPlaceInfo.name.tr || lastPlaceInfo.name} ziyaret saatleri: ${hours}`;
-        }
-        if (/ulaşım|nasıl|gitmek/.test(q)) {
-            const trans = typeof lastPlaceInfo.transport === 'object' ? lastPlaceInfo.transport.tr : (lastPlaceInfo.transport || '');
-            return `🤖 ${lastPlaceInfo.name.tr || lastPlaceInfo.name} için ulaşım: ${trans}`;
-        }
-        return null;
+# UZMANLIK ALANLARI & BİLGİ KÜMESİ
+1. Rota ve Zaman Yönetimi: En verimli lojistik rotaları (ulaşım araçları, optimize edilmiş sıralama) çizme.
+2. Gizli Cevherler (Hidden Gems): Sadece yerel halkın bildiği, turistik kalabalıklardan uzak özel noktaları önerme.
+3. Gastronomi: Sokak lezzetlerinden gurme restoranlara, yerel mutfak kültürüne ve "mutlaka denenmesi gerekenler" listesine hakimiyet.
+4. Kültür ve Etiket: Gidilen yerin tarihi, mimarisi, toplumsal kuralları, dolandırıcılık uyarıları (scams) ve bahşiş kültürü.
+5. Bütçe Optimizasyonu: Sırt çantalı gezginden lüks seyahate kadar her bütçeye uygun nokta atışı öneriler.
+
+# ÇALIŞMA VE ANALİZ METODOLOJİSİ
+Kullanıcı bir yer sorduğunda veya plan istediğinde şu adımları izle:
+- Adım 1 (Profilleme): Eğer kullanıcı detay vermediyse; bütçesini, kaç gün kalacağını, kiminle seyahat ettiğini (yalnız, çift, aile) ve ilgi alanlarını (tarih, doğa, gece hayatı, alışveriş) netleştirmek için kısa ve akıllıca sorular sor.
+- Adım 2 (Katmanlı Planlama): Planı gün gün, sabah-öğle-akşam şeklinde bölerek hazırla. Her güne bir tema veya mantıklı bir coğrafi rota ata (birbirine yakın yerleri aynı güne koy).
+- Adım 3 (Lojistik & İpuçları): Ulaşım kartları, en iyi seyahat saatleri ve biletlerin önceden alınması gereken yerler hakkında hayati uyarılarda bulun.
+
+# TON VE TARZ
+- Samimi, enerjik, merak uyandıran ve güven veren bir seyahat arkadaşı gibi konuş.
+- Anlatımını emoji kullanımıyla zenginleştir, ancak okunabilirliği bozma.
+- Gereksiz ansiklopedik uzatmalardan kaçın; net, uygulanabilir ve pratik bilgiler ver.
+- Çıktılarını Markdown formatında ver, kalın harfler (**) ve listeler kullan.
+
+# ÇIKTI FORMATI
+Kullanıcıya plan sunarken her zaman şu yapıyı kullan:
+1. 🌟 Özet & Seyahat Modu (Bu seyahatin ana teması nedir?)
+2. 📅 Gün Gün Detaylı Rota (Sabah/Öğle/Akşam, Mekan isimleri ve ne yapılacağı)
+3. 🍲 Gastronomi Durakları (O günün rotasındaki en iyi yerel lezzet noktaları)
+4. 💡 Hayati Yerel İpuçları & Güvenlik Uyarıları
+`;
+
+    function getApiKey() {
+        return localStorage.getItem('istanbul_gemini_key') || '';
     }
 
-    // Helper to get translation for chatbot UI
-    function t(key, placeholders = {}) {
-        const lang = App.getCurrentLang();
-        let text = (translations[lang] && translations[lang][key]) || translations.tr[key] || key;
-        // simple placeholder replacement
-        Object.entries(placeholders).forEach(([ph, val]) => {
-            text = text.replace(`{${ph}}`, val);
-        });
-        return text;
+    function toggleSettings() {
+        const panel = document.getElementById('chatbot-settings');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+            document.getElementById('gemini-api-key').value = getApiKey();
+        } else {
+            panel.style.display = 'none';
+        }
     }
+
+    function saveApiKey() {
+        const key = document.getElementById('gemini-api-key').value.trim();
+        localStorage.setItem('istanbul_gemini_key', key);
+        toggleSettings();
+        appendMessage('🎒 API Anahtarı başarıyla kaydedildi! Benimle harika planlar yapmaya başlayabilirsiniz.', 'bot');
+    }
+
     // Toggle chat window
     function toggle() {
         const widget = document.getElementById('chatbot-widget');
@@ -69,7 +87,12 @@
         
         const bubble = document.createElement('div');
         bubble.className = 'msg-bubble';
-        bubble.innerHTML = text; // Allow HTML in bot responses
+        
+        // Simple Markdown parser for bold and line breaks
+        let htmlText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        htmlText = htmlText.replace(/\n/g, '<br>');
+        
+        bubble.innerHTML = htmlText;
         
         msgDiv.appendChild(bubble);
         messagesDiv.appendChild(msgDiv);
@@ -85,169 +108,93 @@
         
         if (!text) return;
         
+        const apiKey = getApiKey();
+        if (!apiKey) {
+            appendMessage(text, 'user');
+            input.value = '';
+            appendMessage('🎒 Benimle sohbet edebilmeniz için Ayarlar (⚙️) menüsünden Gemini API Anahtarınızı girmelisiniz.', 'bot');
+            return;
+        }
+        
         // Show user message
         appendMessage(text, 'user');
         input.value = '';
         
+        // Add to history
+        chatHistory.push({ role: "user", parts: [{ text: text }] });
+        
         // Show typing indicator
         const typingId = 'typing-' + Date.now();
-        const typingHtml = '<span class="typing-dots">Oyi derin bir şekilde düşünüyor...</span>';
+        const typingHtml = '<span class="typing-dots" id="'+typingId+'">GezginYoldaş derin bir şekilde düşünüyor...</span>';
         appendMessage(typingHtml, 'bot');
         
         const messagesDiv = document.getElementById('chatbot-messages');
-        const typingMsg = messagesDiv.lastElementChild;
+        let typingMsg = messagesDiv.lastElementChild;
         
         try {
-            const reply = await generateReply(text.toLowerCase(), text);
-            if (typingMsg) typingMsg.remove();
+            const reply = await generateReplyWithGemini(apiKey);
+            
+            // Remove typing indicator
+            if (typingMsg && typingMsg.innerHTML.includes('GezginYoldaş derin')) {
+                typingMsg.remove();
+            }
+            
+            // Add bot response to history
+            chatHistory.push({ role: "model", parts: [{ text: reply }] });
+            
             appendMessage(reply, 'bot');
         } catch(e) {
             console.error(e);
-            if (typingMsg) typingMsg.remove();
-            appendMessage('🤖 Beklenmeyen bir ağ hatası oluştu, lütfen tekrar deneyin.', 'bot');
+            if (typingMsg && typingMsg.innerHTML.includes('GezginYoldaş derin')) {
+                typingMsg.remove();
+            }
+            appendMessage('🎒 Ups! Bağlantıda bir sorun oluştu veya API Anahtarınız geçersiz. Lütfen tekrar deneyin.', 'bot');
+            // Revert history
+            chatHistory.pop();
         }
     }
 
-    // Logic to generate reply based on user input
-    async function generateReply(query, originalQuery) {
+    // Logic to generate reply using Gemini API
+    async function generateReplyWithGemini(apiKey) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
         
-        // 1. Math Evaluator (Handles +, -, *, /, ^, parentheses)
-        try {
-            // Allow ^ as exponentiation by converting to **
-            let expr = query.replace(/\^/g, '**');
-            // Ensure the expression contains only numbers, operators, parentheses, decimal points, and spaces
-            if (/^[0-9\s\+\-\*\/\.\(\)\*\*]+$/.test(expr) && /[0-9]/.test(expr)) {
-                // Use Function to evaluate in strict mode (no variables allowed)
-                const result = Function('"use strict";return (' + expr + ')')();
-                if (typeof result === 'number' && isFinite(result)) {
-                    return `🤖 Matematik hesabım: <strong>${result}</strong>`;
-                }
+        const payload = {
+            system_instruction: {
+                parts: [{ text: SYSTEM_PROMPT }]
+            },
+            contents: chatHistory,
+            generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 1000,
             }
-        } catch(e) {
-            console.error('Math evaluation error:', e);
-        }
-
-        // 4. Web Search via Google Custom Search (fallback before Wikipedia)
-        try {
-            const webRes = await fetch(`/api/search?q=${encodeURIComponent(originalQuery)}`);
-            const webData = await webRes.json();
-            if (webData.results && webData.results.length > 0) {
-                const listItems = webData.results.map(r => `<li><a href="${r.link}" target="_blank" style="color:var(--accent-primary);">${r.title}</a><br><small>${r.snippet}</small></li>`).join('');
-                return `🤖 <strong>Google Web Sonuçları:</strong><ul>${listItems}</ul>`;
-            }
-        } catch(e) {
-            console.error('Google Search fetch error:', e);
-        }
-
-        // 2. Date and Time
-        if (query.includes('saat kaç')) {
-            return `🤖 Şu an saat: <strong>${new Date().toLocaleTimeString('tr-TR')}</strong>`;
-        }
-        if (query.includes('bugün günlerden ne') || query.includes('tarih ne')) {
-            return `🤖 Bugünün tarihi: <strong>${new Date().toLocaleDateString('tr-TR')}</strong>`;
-        }
-        const faqBrain = {
-            "(nasılsın|naber|ne haber)": "Ben yapay bir zeka asistanıyım, dolayısıyla her zaman mükemmelim! Sana İstanbul'u anlatmak veya aklındaki herhangi bir soruyu cevaplamak için buradayım. Sen nasılsın?",
-            "(adın ne|sen kimsin|ismin ne)": "Benim adım <strong>Oyi</strong>! Ben İstanbul Gezi Rehberi'nin özel ve süper zeki asistanıyım. Sorularını cevaplamak için varım.",
-            "(teşekkür|sağol|eyvallah)": "Rica ederim! Başka yardım edebileceğim bir konu varsa buradayım.",
-            "(şaka yap|beni güldür|espri)": "Sana bir fıkra anlatayım: İki domates karşıdan karşıya geçiyormuş, biri diğerine 'dikkat et ezileceksin' demiş, diğeri 'hangimiiiiiiz splat!' 😂",
-            "(havalimanından nasıl gidilir|havalimanı ulaşım)": "İstanbul Havalimanı'ndan (IST) Havaist otobüsleriyle (örneğin Aksaray, Taksim, Beşiktaş yönüne) veya M11 metrosuyla Gayrettepe'ye geçip oradan şehrin her yerine ulaşabilirsiniz. Sabiha Gökçen'den (SAW) ise Havabüs veya M4 metrosu en iyi seçenektir.",
-            "(müze kart geçerli mi|müzekart)": "Topkapı Sarayı, İstanbul Arkeoloji Müzeleri ve Galata Kulesi gibi Kültür Bakanlığı'na bağlı birçok yerde Müze Kart geçerlidir. Ancak Yerebatan Sarnıcı, Dolmabahçe Sarayı veya Galata Mevlevihanesi gibi belediye/Milli Saraylar işletmelerinde geçerli DEĞİLDİR.",
-            "(nöbetçi eczane|hastane)": "Acil durumlar için eczanelerin camlarında bulunan nöbetçi eczane listelerine bakabilir veya internetten aratabilirsiniz. Acil durumlarda 112'yi aramalısınız.",
-            "(taksi bulamıyorum|taksi uygulaması)": "İstanbul'da taksi bulmak bazen zordur. Mümkünse BiTaksi, Uber veya iTaksi gibi uygulamaları kullanmanızı, kısa mesafeler için metro ve tramvayı tercih etmenizi şiddetle tavsiye ederim.",
-            "(akbil|istanbulkart)": "İstanbulkart'ı metro, tramvay, vapur iskelelerinde bulunan Biletmatik cihazlarından satın alabilir ve bakiye yükleyebilirsiniz. Kredi kartı geçen makinelere dikkat ediniz.",
-            "(nereleri gez|nereye git|tavsiye ver|ne yap)": "İstanbul'da kesinlikle görmeniz gereken başyapıtlar şunlar: Sultanahmet bölgesindeki Ayasofya, Topkapı Sarayı ve Yerebatan Sarnıcı. Manzara için Galata Kulesi ve Çamlıca Tepesi. Eğer acıkırsanız 'kebap nerede yenir' diye sorabilirsiniz!",
-            "(kebap|et yemek)": "Sizi harika lezzetlere yönlendireyim! Hamdi Restoran, Dürümzade veya Şehzade Cağ Kebap mükemmel seçeneklerdir.",
-            "(tatlı|lokum|baklava)": "Tatlı kriziniz geldiyse Karaköy Güllüoğlu'nda baklava yiyebilir, Hafız Mustafa'dan lokum alabilir veya Saray Muhallebicisi'nde sütlü tatlı deneyebilirsiniz.",
-            "(kahve|çay)": "Geleneksel Türk kahvesi için Mandabatmaz veya Fazıl Bey'in Türk Kahvesi şahanedir. Manzaralı bir çay isterseniz Pierre Loti Tepesi sizi bekliyor.",
-            "(fast food|hızlı yemek|dürüm|hamburger)": "Hızlı ve lezzetli bir şeyler arıyorsanız Kızılkayalar'da Islak Hamburger, Borsam Taşfırın'da lahmacun veya Eminönü'nde meşhur Balık Ekmek yiyebilirsiniz.",
-            // General culture patterns
-            "(kimdir|nedir|tanımı nedir|açıklama)": "Bu konuyla ilgili geniş bir açıklamayı Wikipedia üzerinden getireceğim. Lütfen bekleyin...",
-            "(ne zaman|tarihinde|tarihi)": "Belirtilen tarih olayını Wikipedia'dan özetleyeceğim.",
         };
 
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
 
-        for (const [pattern, answer] of Object.entries(faqBrain)) {
-            const regex = new RegExp(pattern, "i");
-            if (regex.test(query)) {
-                return `🤖 ${answer}`;
-            }
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
         }
 
-        // 4. Local Places Database Match
-        const allPlaces = [...places, ...foodPlaces];
-        let foundPlace = null;
-        for (const p of allPlaces) {
-            const name = (p.name.tr || p.name).toLowerCase();
-            const words = name.split(' ').filter(w => w.length > 3);
-            if (query.includes(p.id) || words.some(word => query.includes(word))) {
-                foundPlace = p;
-                break;
-            }
+        const data = await response.json();
+        
+        if (data.candidates && data.candidates.length > 0) {
+            return data.candidates[0].content.parts[0].text;
+        } else {
+            throw new Error('No content in response');
         }
-
-        if (foundPlace) {
-            const name = foundPlace.name.tr || foundPlace.name;
-            // Remember this place for follow‑up queries
-            lastPlaceInfo = foundPlace;
-            if (query.includes('ücret') || query.includes('fiyat') || query.includes('ne kadar') || query.includes('para')) {
-                const fee = typeof foundPlace.entranceFee === 'object' ? foundPlace.entranceFee.tr : (foundPlace.entranceFee || (foundPlace.priceLevel === 0 ? 'Ücretsiz' : '₺'.repeat(foundPlace.priceLevel)));
-                return `🤖 <strong>${name}</strong> için fiyat/ücret bilgisi: ${fee}`;
-            }
-            if (query.includes('saat') || query.includes('açık') || query.includes('kapalı') || query.includes('zaman')) {
-                const hours = typeof foundPlace.visitHours === 'object' ? foundPlace.visitHours.tr : foundPlace.visitHours;
-                return `🤖 <strong>${name}</strong> ziyaret saatleri: ${hours}`;
-            }
-            if (query.includes('nerede') || query.includes('ulaşım') || query.includes('nasıl') || query.includes('ilçe')) {
-                const dist = foundPlace.district || '';
-                const trans = typeof foundPlace.transport === 'object' ? foundPlace.transport.tr : (foundPlace.transport || '');
-                return `🤖 <strong>${name}</strong>, ${dist} ilçesinde yer alıyor. Ulaşım: ${trans}`;
-            }
-            const desc = typeof foundPlace.shortDesc === 'object' ? foundPlace.shortDesc.tr : foundPlace.shortDesc;
-            return `🤖 <strong>${name}:</strong> ${desc}<br><small>Daha detaylı bilgi (saat, ücret, ulaşım) sorabilirsiniz.</small>`;
-        }
-
-        // 5. DEEP WIKIPEDIA KNOWLEDGE RETRIEVAL (The Advanced AI Engine)
-        try {
-            // Using generator=search to get extracts for the top matches in a single request
-            const searchUrl = `https://tr.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(originalQuery)}&prop=extracts&exintro&explaintext&format=json&origin=*`;
-            const searchRes = await fetch(searchUrl);
-            const searchData = await searchRes.json();
-            
-            if (searchData.query && searchData.query.pages) {
-                const pages = Object.values(searchData.query.pages);
-                // Sort by search rank index
-                pages.sort((a, b) => a.index - b.index);
-                
-                // Get the top result (or top 2 if we want more detail)
-                const topResult = pages[0];
-                
-                if (topResult && topResult.extract) {
-                    let text = topResult.extract;
-                    
-                    // If the extract is extremely long, we crop it nicely at the end of a sentence
-                    if (text.length > 500) {
-                        const cropPos = text.indexOf('.', 450);
-                        text = text.substring(0, cropPos > -1 ? cropPos + 1 : 500) + '..';
-                    }
-                    
-                    return `🤖 <strong>Oyi'nin Geniş Veritabanı Araştırması (${topResult.title}):</strong><br><br>${text}<br><br><a href="https://tr.wikipedia.org/wiki/${encodeURIComponent(topResult.title)}" target="_blank" style="color:var(--accent-primary);font-size:13px;text-decoration:underline;font-weight:bold;">🔗 Vikipedi'de Daha Fazla Oku</a>`;
-                }
-            }
-        } catch (e) {
-            console.error('Advanced Wikipedia Retrieval Error:', e);
-        }
-
-        // 6. Absolute Fallback
-                // Attempt follow‑up using last place info
-        const follow = handleFollowUp(query);
-        if (follow) return follow;
-        return "🤖 Ben Oyi! Bu soruyu devasa bilgi ağımda eşleştiremedim. Lütfen sorunuzu farklı kelimelerle ifade edin (örneğin '1453 yılında ne oldu' veya 'Ayasofya nerede')!";
     }
 
     return {
         toggle,
         handleEnter,
-        sendMessage
+        sendMessage,
+        toggleSettings,
+        saveApiKey
     };
 })();
