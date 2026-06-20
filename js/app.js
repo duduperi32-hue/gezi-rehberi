@@ -40,6 +40,17 @@ const App = (() => {
                 }
             }
         });
+        // Check URL params for shared profile
+        const params = new URLSearchParams(window.location.search);
+        const sharedProfile = params.get('profile');
+        if (sharedProfile && typeof Quiz.createMockResult === 'function') {
+            const mockRes = Quiz.createMockResult(sharedProfile);
+            if (mockRes) {
+                setTimeout(() => {
+                    showResult(mockRes);
+                }, 100);
+            }
+        }
     }
 
     // ── Screen management ──
@@ -110,6 +121,31 @@ const App = (() => {
                 });
             }, 300);
         });
+    }
+
+    // ── Share result ──
+    function shareResult() {
+        if (!quizResult) return;
+        const profileKey = quizResult.profile.key;
+        
+        // Ensure no existing query params mess this up
+        const baseUrl = window.location.origin + window.location.pathname;
+        const shareUrl = baseUrl + "?profile=" + profileKey;
+        
+        const titleText = document.getElementById('result-title').textContent || 'İstanbul Gezi Profilim';
+        const shareText = `Benim İstanbul gezi profilim: ${titleText}! Sen de kendi seyahat kimliğini öğrenmek ister misin?`;
+
+        if (navigator.share) {
+            navigator.share({
+                title: 'Benim İstanbul Gezi Profilim',
+                text: shareText,
+                url: shareUrl
+            }).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Profil bağlantınız kopyalandı! Arkadaşlarınıza gönderebilirsiniz:\n' + shareUrl);
+            });
+        }
     }
 
     // ── Show guide ──
@@ -231,6 +267,7 @@ const App = (() => {
         goHome,
         startQuiz,
         showResult,
+        shareResult,
         showGuide,
         setLanguage,
         toggleLangMenu,

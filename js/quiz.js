@@ -209,12 +209,31 @@ const Quiz = (() => {
         }
     }
 
+    // ── Create mock result for shared profiles ──
+    function createMockResult(profileKey) {
+        const profile = profileTypes.find(p => p.key === profileKey);
+        if (!profile) return null;
+        
+        const pIndex = categoryKeys.indexOf(profileKey);
+        const scores = [20, 20, 20, 20, 20];
+        if (pIndex !== -1) {
+            scores[pIndex] = 85;
+            scores[(pIndex + 1) % 5] = 60;
+        } else if (profileKey === 'explorer') {
+            scores[4] = 85;
+            scores[0] = 60;
+        }
+
+        return { profile, scores };
+    }
+
     // ── Public API ──
     return {
         init,
         nextQuestion,
         prevQuestion,
         refreshLanguage,
+        createMockResult,
         getProfileTypes: () => profileTypes,
         getCategoryKeys: () => categoryKeys
     };
