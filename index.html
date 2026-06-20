@@ -353,14 +353,44 @@
     </div>
 
     <!-- ══════════ LOGIN MODAL ══════════ -->
-    <div id="login-modal" class="chatbot-widget hidden" style="width: 300px; height: auto; top: 50%; left: 50%; transform: translate(-50%, -50%); bottom: auto; right: auto; position: fixed; z-index: 2000;">
+    <div id="login-modal" class="chatbot-widget hidden" style="bottom: 80px; right: 20px; width: 320px; height: auto;">
         <div class="chatbot-header">
-            <h3>🔑 Oturum Aç</h3>
+            <h3 id="auth-title">Giriş Yap</h3>
             <button class="btn-close-chat" onclick="App.closeLogin()">×</button>
         </div>
-        <div style="padding: 20px;">
-            <input type="text" id="login-username" data-i18n="login_placeholder" placeholder="" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; margin-bottom: 15px; outline: none;">
-            <button class="btn-primary" onclick="App.doLogin()" style="width: 100%; justify-content: center; padding: 10px;">Giriş Yap</button>
+        
+        <!-- Tab Buttons -->
+        <div style="display: flex; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary);">
+            <button id="tab-login" onclick="App.switchAuthTab('login')" style="flex:1; padding:10px; background:transparent; border:none; color:white; cursor:pointer; font-weight:bold; border-bottom: 2px solid var(--color-primary);">Giriş Yap</button>
+            <button id="tab-register" onclick="App.switchAuthTab('register')" style="flex:1; padding:10px; background:transparent; border:none; color:var(--text-secondary); cursor:pointer; font-weight:bold; border-bottom: 2px solid transparent;">Kayıt Ol</button>
+        </div>
+
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 10px;">
+            <div id="auth-alert" style="display: none; padding: 10px; background: rgba(244, 67, 54, 0.2); border: 1px solid rgba(244, 67, 54, 0.5); border-radius: 8px; color: #ffcccc; font-size: 13px; margin-bottom: 5px;"></div>
+
+            <!-- Login View -->
+            <div id="view-login" style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="login-username" placeholder="Kullanıcı Adı" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; outline: none;">
+                <input type="password" id="login-password" placeholder="Şifre" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; outline: none;">
+                <button class="btn-primary" onclick="App.doLogin()" style="width: 100%; justify-content: center; padding: 10px;">Giriş Yap</button>
+                <button id="btn-fallback" class="btn-secondary" onclick="App.switchAuthTab('fallback')" style="display: none; width: 100%; justify-content: center; padding: 10px; margin-top: 5px;">E-posta ile Giriş Yap</button>
+            </div>
+
+            <!-- Register View -->
+            <div id="view-register" style="display: none; flex-direction: column; gap: 10px;">
+                <input type="text" id="reg-username" placeholder="Kullanıcı Adı" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; outline: none;">
+                <input type="email" id="reg-email" placeholder="E-posta Adresi" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; outline: none;">
+                <input type="password" id="reg-password" placeholder="Şifre" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; outline: none;">
+                <button class="btn-primary" onclick="App.doRegister()" style="width: 100%; justify-content: center; padding: 10px;">Kayıt Ol</button>
+            </div>
+
+            <!-- Fallback Email View -->
+            <div id="view-fallback" style="display: none; flex-direction: column; gap: 10px;">
+                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Şifrenizi mi unuttunuz? Kayıtlı e-posta adresinizle giriş yapabilirsiniz.</p>
+                <input type="email" id="fallback-email" placeholder="Kayıtlı E-posta" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); background: var(--bg-glass); color: white; outline: none;">
+                <button class="btn-primary" onclick="App.doEmailLogin()" style="width: 100%; justify-content: center; padding: 10px;">E-posta ile Gir</button>
+                <button class="btn-secondary" onclick="App.switchAuthTab('login')" style="width: 100%; justify-content: center; padding: 10px; margin-top: 5px;">Geri Dön</button>
+            </div>
         </div>
     </div>
 

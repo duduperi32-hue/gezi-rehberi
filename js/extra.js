@@ -11,12 +11,117 @@ App.closeLogin = function() {
     document.getElementById('login-modal').classList.add('hidden');
 };
 
+App.switchAuthTab = function(tab) {
+    document.getElementById('view-login').style.display = 'none';
+    document.getElementById('view-register').style.display = 'none';
+    document.getElementById('view-fallback').style.display = 'none';
+    document.getElementById('tab-login').style.borderBottomColor = 'transparent';
+    document.getElementById('tab-login').style.color = 'var(--text-secondary)';
+    document.getElementById('tab-register').style.borderBottomColor = 'transparent';
+    document.getElementById('tab-register').style.color = 'var(--text-secondary)';
+    document.getElementById('auth-alert').style.display = 'none';
+
+    if (tab === 'login') {
+        document.getElementById('auth-title').innerText = 'Giriş Yap';
+        document.getElementById('view-login').style.display = 'flex';
+        document.getElementById('tab-login').style.borderBottomColor = 'var(--color-primary)';
+        document.getElementById('tab-login').style.color = 'white';
+    } else if (tab === 'register') {
+        document.getElementById('auth-title').innerText = 'Kayıt Ol';
+        document.getElementById('view-register').style.display = 'flex';
+        document.getElementById('tab-register').style.borderBottomColor = 'var(--color-primary)';
+        document.getElementById('tab-register').style.color = 'white';
+    } else if (tab === 'fallback') {
+        document.getElementById('auth-title').innerText = 'Şifremi Unuttum';
+        document.getElementById('view-fallback').style.display = 'flex';
+    }
+};
+
+App.showAuthAlert = function(msg) {
+    const alertBox = document.getElementById('auth-alert');
+    alertBox.innerText = msg;
+    alertBox.style.display = 'block';
+};
+
+App.getUsersDb = function() {
+    return JSON.parse(localStorage.getItem('istanbul_users') || '{}');
+};
+
+App.doRegister = function() {
+    const user = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass = document.getElementById('reg-password').value.trim();
+    
+    if (!user || !email || !pass) {
+        App.showAuthAlert('Lütfen tüm alanları doldurun.');
+        return;
+    }
+    
+    const db = App.getUsersDb();
+    if (db[user]) {
+        App.showAuthAlert('Bu kullanıcı adı zaten alınmış.');
+        return;
+    }
+    
+    db[user] = { email: email, password: pass };
+    localStorage.setItem('istanbul_users', JSON.stringify(db));
+    
+    // Auto login
+    localStorage.setItem('istanbul_user', user);
+    App.closeLogin();
+    App.checkLogin();
+};
+
 App.doLogin = function() {
     const user = document.getElementById('login-username').value.trim();
-    if (user) {
-        localStorage.setItem('istanbul_user', user);
+    const pass = document.getElementById('login-password').value.trim();
+    
+    if (!user || !pass) {
+        App.showAuthAlert('Lütfen kullanıcı adı ve şifre girin.');
+        return;
+    }
+    
+    const db = App.getUsersDb();
+    if (!db[user]) {
+        App.showAuthAlert('Kullanıcı bulunamadı. Lütfen kayıt olun.');
+        return;
+    }
+    
+    if (db[user].password !== pass) {
+        App.showAuthAlert('Hatalı şifre! İsterseniz e-posta ile giriş yapabilirsiniz.');
+        document.getElementById('btn-fallback').style.display = 'flex';
+        return;
+    }
+    
+    // Success
+    localStorage.setItem('istanbul_user', user);
+    App.closeLogin();
+    App.checkLogin();
+};
+
+App.doEmailLogin = function() {
+    const email = document.getElementById('fallback-email').value.trim();
+    if (!email) {
+        App.showAuthAlert('Lütfen kayıtlı e-posta adresinizi girin.');
+        return;
+    }
+    
+    const db = App.getUsersDb();
+    let foundUser = null;
+    
+    for (const [username, data] of Object.entries(db)) {
+        if (data.email === email) {
+            foundUser = username;
+            break;
+        }
+    }
+    
+    if (foundUser) {
+        localStorage.setItem('istanbul_user', foundUser);
         App.closeLogin();
         App.checkLogin();
+    } else {
+        App.showAuthAlert('Bu e-posta adresiyle kayıtlı hesap bulunamadı.');
     }
 };
 
