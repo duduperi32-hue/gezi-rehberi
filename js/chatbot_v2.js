@@ -62,16 +62,51 @@ const Chatbot = (() => {
         let typingMsg = messagesDiv.lastElementChild;
         
         // Simulate thinking time
-        setTimeout(() => {
+        setTimeout(async () => {
             if (typingMsg && typingMsg.innerHTML.includes('felsefi bir analiz')) {
                 typingMsg.remove();
             }
-            const reply = generateOfflineReply(text.toLowerCase());
+            const reply = await generateOfflineReply(text.toLowerCase(), text);
             appendMessage(reply, 'bot');
         }, 1500);
     }
 
-    function generateOfflineReply(query) {
+    async function fetchWikipediaSummary(query) {
+        try {
+            // Clean up common question words
+            let subject = query.replace(/nedir|kimdir|kim|nerede|hakkında|bilgi|ver|anlat|öner/gi, '').trim();
+            if (subject.length < 3) return null;
+
+            // Search for best matching title
+            const searchUrl = `https://tr.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(subject)}&utf8=&format=json&origin=*`;
+            const searchRes = await fetch(searchUrl);
+            const searchData = await searchRes.json();
+            
+            if (!searchData.query.search || searchData.query.search.length === 0) return null;
+            
+            const bestTitle = searchData.query.search[0].title;
+            
+            // Fetch summary of that title
+            const url = `https://tr.wikipedia.org/w/api.php?action=query&prop=extracts&exsentences=3&exintro&explaintext&titles=${encodeURIComponent(bestTitle)}&format=json&origin=*`;
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            const pages = data.query.pages;
+            const pageId = Object.keys(pages)[0];
+            
+            if (pageId === "-1") return null;
+            
+            return {
+                title: bestTitle,
+                extract: pages[pageId].extract
+            };
+        } catch (e) {
+            console.error("Wiki Fetch Error:", e);
+            return null;
+        }
+    }
+
+    async function generateOfflineReply(query, originalText) {
         // Basic QA
         if (query.includes('merhaba') || query.includes('selam')) {
             return `**Merhaba!** Ben GezginYoldaş. Dünyanın en bilgili seyahat filozofu ve yerel rehberiyim. Bana İstanbul'dan bir mekan adı söyleyin, size onun sadece turistik tarafını değil; felsefesini, matematiksel rotasını ve en iyi gastronomi sırlarını anlatayım!`;
@@ -220,12 +255,19 @@ const Chatbot = (() => {
             `;
         }
 
+        // --- WIKIPEDIA FALLBACK ENGINE ---
+        const wikiData = await fetchWikipediaSummary(originalText);
+        if (wikiData) {
+            return `### 🏛️ Kültür ve Tarih Arşivi: ${wikiData.title}\n\n${wikiData.extract}\n\n*Not: Bu bilgiyi sana sunabilmek için devasa açık kütüphane arşivime (Wikipedia) bağlanıp okudum. Başka tarihi figürler, anıtlar veya yapılar sormaktan çekinme.*`;
+        }
+
         // Generic fallback with persona
         return `
-Dostum, bana bahsettiğin yeri veya yemeği tam çıkaramadım. Ancak Seyahat Uzmanı olarak sana en net tavsiyem şudur:
+Dostum, bana bahsettiğin yeri, yemeği veya tarihi karakteri tam çıkaramadım. Ancak Seyahat Uzmanı olarak sana en net tavsiyem şudur:
 **Rotasızlık da bazen iyi bir rotadır.** 
 
 Ama benden tam verim almak istersen bana doğrudan:
+- "Boğa heykeli", "Teoman kimdir" gibi **genel kültür** soruları sor.
 - "Ayasofya", "Galata" veya "Kapalıçarşı" gibi **mekan adları** söyle.
 - "Fatih'te döner", "İstiklal'de tantuni", "Kadıköy'de lahmacun" veya "Kebap nerede yenir" gibi **ilçe ve yemek adları** söyle.
 
