@@ -107,8 +107,10 @@ const Chatbot = (() => {
     }
 
     async function generateOfflineReply(query, originalText) {
+        const q = query.toLowerCase();
+
         // Basic QA
-        if (query.includes('merhaba') || query.includes('selam')) {
+        if (q.includes('merhaba') || q.includes('selam')) {
             return `**Merhaba!** Ben GezginYoldaş. Dünyanın en bilgili seyahat filozofu ve yerel rehberiyim. Bana İstanbul'dan bir mekan adı söyleyin, size onun sadece turistik tarafını değil; felsefesini, matematiksel rotasını ve en iyi gastronomi sırlarını anlatayım!`;
         }
 
