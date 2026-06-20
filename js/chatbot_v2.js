@@ -262,12 +262,18 @@ Lojistik ve zevk algoritmasını çalıştırarak senin için 1 günlük mükemm
 
         // Search in places (fallback for general location names)
         let foundPlace = null;
-        for (const p of allPlaces) {
-            const name = (p.name.tr || p.name).toLowerCase();
-            const words = name.split(' ').filter(w => w.length > 3);
-            if (q.includes(p.id) || words.some(word => q.includes(word))) {
-                foundPlace = p;
-                break;
+        
+        // Eğer kullanıcı doğrudan tarih veya hikaye sormuşsa, yerel veritabanı yerine direkt Wikipedia'ya gitsin.
+        const isHistoryRequest = q.includes('tarih') || q.includes('hikaye') || q.includes('kim') || q.includes('anlat');
+        
+        if (!isHistoryRequest) {
+            for (const p of allPlaces) {
+                const name = (p.name.tr || p.name).toLowerCase();
+                const words = name.split(' ').filter(w => w.length > 3);
+                if (q.includes(p.id) || words.some(word => q.includes(word))) {
+                    foundPlace = p;
+                    break;
+                }
             }
         }
 
