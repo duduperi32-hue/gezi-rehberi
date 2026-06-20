@@ -201,7 +201,9 @@ const Guide = (() => {
 
         const animDelay = Math.min(index * 0.05, 0.5);
         const isVisited = visitedPlaces.has(item.id);
-        const visitedBadge = isVisited ? `<div style="position: absolute; top: 10px; right: 10px; background: rgba(0, 200, 83, 0.9); color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 14px; z-index: 2;">✅</div>` : '';
+        const visitedBadge = isVisited 
+            ? `<div onclick="Guide.toggleVisitedFromCard('${item.id}', event)" style="position: absolute; top: 10px; right: 10px; background: rgba(0, 200, 83, 0.9); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 14px; z-index: 2; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">✅</div>` 
+            : `<div onclick="Guide.toggleVisitedFromCard('${item.id}', event)" style="position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.4); color: white; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 14px; z-index: 2; cursor: pointer; border: 2px solid rgba(255,255,255,0.7); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">⚪</div>`;
 
         return `
         <div class="place-card" onclick="Guide.showDetail('${item.id}', ${isFood})" style="animation-delay: ${animDelay}s">
@@ -429,16 +431,29 @@ const Guide = (() => {
         }
     }
 
-    // ── Toggle visited state ──
+    // ── Toggle visited state from detail ──
     function toggleVisited() {
         if (!currentDetailItem) return;
-        if (visitedPlaces.has(currentDetailItem.id)) {
-            visitedPlaces.delete(currentDetailItem.id);
+        toggleVisitedFromCard(currentDetailItem.id, null);
+    }
+
+    // ── Toggle visited state from card ──
+    function toggleVisitedFromCard(id, event) {
+        if (event) {
+            event.stopPropagation(); // kartın detay sayfasını açmasını engelle
+        }
+        
+        if (visitedPlaces.has(id)) {
+            visitedPlaces.delete(id);
         } else {
-            visitedPlaces.add(currentDetailItem.id);
+            visitedPlaces.add(id);
         }
         localStorage.setItem('istanbul_visited', JSON.stringify([...visitedPlaces]));
-        updateVisitedButtonState();
+        
+        // Eğer detay sayfası açıksa ve aynı mekan ise, butonunu güncelle
+        if (currentDetailItem && currentDetailItem.id === id) {
+            updateVisitedButtonState();
+        }
         
         // Re-render places silently to update checks
         renderPlaces();
@@ -461,6 +476,7 @@ const Guide = (() => {
         closeDetail,
         renderPlaces,
         refreshLanguage,
-        toggleVisited
+        toggleVisited,
+        toggleVisitedFromCard
     };
 })();
