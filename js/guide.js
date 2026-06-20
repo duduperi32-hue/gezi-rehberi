@@ -421,13 +421,13 @@ const Guide = (() => {
         const isVisited = visitedPlaces.has(currentDetailItem.id);
         
         if (isVisited) {
-            btn.innerHTML = t('btn_unmark_visited');
-            btn.style.background = 'rgba(244, 67, 54, 0.2)';
-            btn.style.borderColor = 'rgba(244, 67, 54, 0.5)';
-        } else {
             btn.innerHTML = t('btn_mark_visited');
             btn.style.background = 'rgba(0, 200, 83, 0.2)';
             btn.style.borderColor = 'rgba(0, 200, 83, 0.5)';
+        } else {
+            btn.innerHTML = t('btn_unmark_visited').replace('❌', '⚪');
+            btn.style.background = 'rgba(255, 255, 255, 0.1)';
+            btn.style.borderColor = 'rgba(255, 255, 255, 0.3)';
         }
     }
 
