@@ -192,7 +192,21 @@ const Guide = (() => {
         const shortDesc = loc(item, 'shortDesc');
         const isFood = item.tier !== undefined;
         const category = isFood ? 'food' : (item.category || 'historical');
-        const priceSymbol = '₺'.repeat(item.priceLevel || 1);
+        
+        // Fix: properly handle priceLevel = 0 (free), undefined, or number
+        let priceDisplay;
+        if (item.priceLevel === 0) {
+            priceDisplay = t('detail_free');
+        } else if (item.priceLevel > 0) {
+            priceDisplay = '₺'.repeat(item.priceLevel);
+        } else if (item.entranceFee) {
+            // Food places that have entranceFee but no priceLevel
+            const ef = item.entranceFee;
+            priceDisplay = typeof ef === 'object' ? (ef[App.getCurrentLang()] || ef.tr || ef.en || '') : ef;
+        } else {
+            priceDisplay = '₺'; // fallback
+        }
+        
         const tierLabels = { 1: t('food_restaurant'), 2: t('food_fastfood'), 3: t('food_cafe'), 4: t('food_dessert') };
 
         const categoryLabel = isFood
@@ -221,7 +235,7 @@ const Guide = (() => {
                 <div class="card-desc">${shortDesc}</div>
             </div>
             <div class="card-footer">
-                <span class="card-price">${item.priceLevel === 0 ? t('detail_free') : priceSymbol}</span>
+                <span class="card-price">${priceDisplay}</span>
                 <span class="card-arrow">
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
                 </span>

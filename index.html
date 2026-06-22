@@ -9,6 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css?v=3">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <!-- Force Cache Clear -->
     <script>
         if ('serviceWorker' in navigator) {
@@ -74,23 +78,10 @@
         </div>
     </nav>
 
-    <!-- ══════════ DEVICE SELECTION SCREEN ══════════ -->
-    <section id="screen-device" class="screen active" style="flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-primary); z-index: 9999; position: relative;">
-        <h2 style="margin-bottom: 30px; font-size: 28px; color: var(--text-primary); text-align: center;">Hangi Cihazı Kullanıyorsunuz?</h2>
-        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-            <button class="btn-primary btn-glow" onclick="App.selectDevice('desktop')" style="flex-direction: column; width: 160px; height: 160px; font-size: 20px; border-radius: 20px;">
-                <span style="font-size: 60px; margin-bottom: 15px;">💻</span>
-                Bilgisayar
-            </button>
-            <button class="btn-primary btn-glow" onclick="App.selectDevice('mobile')" style="flex-direction: column; width: 160px; height: 160px; font-size: 20px; border-radius: 20px;">
-                <span style="font-size: 60px; margin-bottom: 15px;">📱</span>
-                Telefon
-            </button>
-        </div>
-    </section>
+    <!-- Cihaz ekranı kaldırıldı — otomatik algılanıyor -->
 
     <!-- ══════════ WELCOME SCREEN ══════════ -->
-    <section id="screen-welcome" class="screen">
+    <section id="screen-welcome" class="screen active">
         <div class="welcome-content">
             <div class="welcome-badge" data-i18n="welcome_badge">KİŞİSEL GEZİ REHBERİ</div>
             <h1 class="welcome-title">
@@ -432,6 +423,7 @@
     <script src="js/guide.js"></script>
     <script src="js/app.js"></script>
     <script src="js/extra.js"></script>
+    <script src="js/firebase_auth.js"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

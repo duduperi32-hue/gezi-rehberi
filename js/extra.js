@@ -262,13 +262,18 @@ App.skipQuiz = function(tab = 'all') {
     App.switchScreen('guide');
 };
 
-// --- DEVICE SELECTION ---
-App.selectDevice = function(type) {
-    if (type === 'desktop') {
-        document.body.classList.add('force-desktop');
-    } else {
+// --- DEVICE AUTO-DETECT (screen removed, auto-apply) ---
+(function autoDetectDevice() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        || window.innerWidth <= 768;
+    if (isMobile) {
         document.body.classList.add('force-mobile');
+    } else {
+        document.body.classList.add('force-desktop');
     }
-    document.getElementById('screen-device').classList.remove('active');
-    document.getElementById('screen-welcome').classList.add('active');
+})();
+
+// Keep selectDevice for backward compat (no longer called)
+App.selectDevice = function(type) {
+    document.body.classList.add(type === 'desktop' ? 'force-desktop' : 'force-mobile');
 };
