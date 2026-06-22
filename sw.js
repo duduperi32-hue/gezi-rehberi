@@ -1,5 +1,5 @@
 // Service Worker — Network First, her zaman güncel içerik
-const CACHE_NAME = 'istanbul-gezisi-v21';
+const CACHE_NAME = 'istanbul-gezisi-v22';
 
 // Sadece kritik dosyaları önbelleğe al, görselleri alma
 const urlsToCache = [
