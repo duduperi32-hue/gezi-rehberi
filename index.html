@@ -13,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <!-- Force Cache Clear v19 -->
+    <!-- Force Cache Clear v20 -->
     <script>
         // Service Worker'ı güncelle ve eski önbellekleri temizle
         if ('serviceWorker' in navigator) {
@@ -26,7 +26,7 @@
         if (window.caches) {
             caches.keys().then(function(names) {
                 for (let name of names) {
-                    if (!name.includes('v19')) caches.delete(name);
+                    if (!name.includes('v20')) caches.delete(name);
                 }
             });
         }
