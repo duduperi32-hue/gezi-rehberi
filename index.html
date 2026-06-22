@@ -13,18 +13,21 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <!-- Force Cache Clear -->
+    <!-- Force Cache Clear v18 -->
     <script>
+        // Service Worker'ı güncelle ve eski önbellekleri temizle
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
+                for (let reg of registrations) {
+                    reg.update(); // Güncellemeleri kontrol et
                 }
             });
         }
         if (window.caches) {
             caches.keys().then(function(names) {
-                for (let name of names) caches.delete(name);
+                for (let name of names) {
+                    if (!name.includes('v18')) caches.delete(name);
+                }
             });
         }
     </script>

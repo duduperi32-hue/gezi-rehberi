@@ -1,4 +1,7 @@
-const CACHE_NAME = 'istanbul-gezisi-v17'; // Bump to v17 to FORCE update
+// Service Worker — Network First, her zaman güncel içerik
+const CACHE_NAME = 'istanbul-gezisi-v18';
+
+// Sadece kritik dosyaları önbelleğe al, görselleri alma
 const urlsToCache = [
   './',
   './index.html',
@@ -10,50 +13,50 @@ const urlsToCache = [
   './js/guide.js',
   './js/chatbot_v2.js',
   './js/extra.js',
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap'
+  './js/firebase_auth.js'
 ];
 
 self.addEventListener('install', event => {
-  self.skipWaiting();
+  self.skipWaiting(); // Hemen aktif ol
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys().then(cacheNames =>
+      Promise.all(
+        cacheNames
+          .filter(name => name !== CACHE_NAME)
+          .map(name => caches.delete(name)) // Eski önbellekleri sil
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', event => {
-  // Network First, falling back to cache
+  const url = new URL(event.request.url);
+
+  // Görseller için — HER ZAMAN ağdan çek, önbellekten değil
+  if (url.pathname.startsWith('/images/') || 
+      url.pathname.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Diğer dosyalar için — Ağ önce, sonra önbellek
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Update the cache with the new response
         if (response && response.status === 200 && response.type === 'basic') {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
-          });
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
       })
-      .catch(() => {
-        // If network fails, try the cache
-        return caches.match(event.request);
-      })
+      .catch(() => caches.match(event.request))
   );
 });
