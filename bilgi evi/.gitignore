@@ -1,0 +1,11 @@
+# API Anahtarı — ASLA commit'leme!
+config.js
+
+# OS dosyaları
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.suo
+*.user

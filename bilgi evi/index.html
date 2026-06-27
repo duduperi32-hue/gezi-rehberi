@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BilgiEvi — Lise &amp; Meslek Lisesi Eğitim Platformu</title>
+  <meta name="description" content="BilgiEvi, lise ve meslek lisesi öğrencileri için yapay zeka destekli, oyunlaştırılmış modern eğitim platformudur." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== SPLASH / GİRİŞ EKRANI ===== -->
+<div id="screen-login" class="screen active">
+  <div class="login-bg">
+    <div class="login-orb orb1"></div>
+    <div class="login-orb orb2"></div>
+    <div class="login-orb orb3"></div>
+  </div>
+  <div class="login-container">
+    <!-- Sol Panel: Giriş Formu -->
+    <div class="login-left glass-card">
+      <div class="brand">
+        <div class="brand-icon">📚</div>
+        <div>
+          <h1 class="brand-name">BilgiEvi</h1>
+          <p class="brand-tagline">Zekânın Evi</p>
+        </div>
+      </div>
+
+      <!-- Sınıf Seçimi -->
+      <div class="section-label">Sınıfını Seç</div>
+      <div class="class-grid" id="class-grid">
+        <button class="class-btn" data-class="9" id="btn-class-9">
+          <span class="class-number">9</span>
+          <span class="class-text">Sınıf</span>
+        </button>
+        <button class="class-btn" data-class="10" id="btn-class-10">
+          <span class="class-number">10</span>
+          <span class="class-text">Sınıf</span>
+        </button>
+        <button class="class-btn" data-class="11" id="btn-class-11">
+          <span class="class-number">11</span>
+          <span class="class-text">Sınıf</span>
+        </button>
+        <button class="class-btn" data-class="12" id="btn-class-12">
+          <span class="class-number">12</span>
+          <span class="class-text">Sınıf</span>
+        </button>
+      </div>
+
+      <!-- Giriş Formu -->
+      <div class="form-group">
+        <label for="login-email">E-posta</label>
+        <input type="email" id="login-email" placeholder="ornek@okul.edu.tr" />
+      </div>
+      <div class="form-group">
+        <label for="login-password">Şifre</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+
+      <button class="btn-primary btn-start" id="btn-start" onclick="goToDashboard()">
+        <span>🚀 Başla</span>
+      </button>
+
+      <div class="login-footer">
+        <span id="forgot-link" onclick="showForgotPassword()" class="link-text">Şifremi unuttum</span>
+      </div>
+
+      <!-- Şifre Sıfırlama Paneli (gizli) -->
+      <div id="forgot-panel" class="forgot-panel hidden">
+        <div class="section-label" style="margin-top:0">Şifre Sıfırla</div>
+        <div class="form-group">
+          <label for="reset-email">E-posta Adresin</label>
+          <input type="email" id="reset-email" placeholder="ornek@okul.edu.tr" />
+        </div>
+        <button class="btn-secondary" onclick="sendResetEmail()">📧 Sıfırlama Maili Gönder</button>
+        <p id="reset-msg" class="reset-msg"></p>
+        <span onclick="hideForgotPassword()" class="link-text">← Geri dön</span>
+      </div>
+    </div>
+
+    <!-- Sağ Panel: Lig Önizlemesi -->
+    <div class="login-right glass-card">
+      <h2 class="panel-title">🏆 Lig Tablosu</h2>
+      <div class="league-mini" id="league-mini-preview"></div>
+      <button class="btn-outline" onclick="navigate('league')">Tüm Tabloyu Gör →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ANA UYGULAMA KABUĞU ===== -->
+<div id="app-shell" class="hidden">
+  <!-- Yan Menü -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon-sm">📚</div>
+      <span class="brand-name-sm">BilgiEvi</span>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item active" data-nav="dashboard" onclick="navigate('dashboard')">
+        <span class="nav-icon">🏠</span><span class="nav-label">Ana Sayfa</span>
+      </li>
+      <li class="nav-item" data-nav="league" onclick="navigate('league')">
+        <span class="nav-icon">🏆</span><span class="nav-label">Lig Tablosu</span>
+      </li>
+      <li class="nav-item" data-nav="profile" onclick="navigate('profile')">
+        <span class="nav-icon">👤</span><span class="nav-label">Profilim</span>
+      </li>
+      <li class="nav-item" data-nav="classroom" onclick="navigate('classroom')">
+        <span class="nav-icon">🎓</span><span class="nav-label">Derslik</span>
+      </li>
+      <li class="nav-item" data-nav="topics" onclick="navigate('topics')">
+        <span class="nav-icon">📖</span><span class="nav-label">Konu Anlatımı</span>
+      </li>
+      <li class="nav-item" data-nav="tests" onclick="navigate('tests')">
+        <span class="nav-icon">✏️</span><span class="nav-label">Testler</span>
+      </li>
+      <li class="nav-item" data-nav="game" onclick="navigate('game')">
+        <span class="nav-icon">🎮</span><span class="nav-label">Oyun Modu</span>
+      </li>
+    </ul>
+    <div class="sidebar-user" onclick="navigate('profile')">
+      <div class="avatar-sm" id="sidebar-avatar">AY</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebar-name">Ahmet Yılmaz</div>
+        <div class="sidebar-user-class" id="sidebar-class">10. Sınıf</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Ekran Alanı -->
+  <main class="main-content">
+
+    <!-- ===== ANA SAYFA ===== -->
+    <div id="screen-dashboard" class="screen-inner">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">Merhaba, <span id="dash-name">Ahmet</span> 👋</h2>
+          <p class="page-sub">Bugünkü hedefine ulaşmaya hazır mısın?</p>
+        </div>
+        <div class="streak-badge">🔥 <span id="streak-count">7</span> Gün Serisi</div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="dash-card glass-card task-card">
+          <h3>📅 Günün Görevi</h3>
+          <p class="task-desc">Matematik — 2. Dereceden Denklemler testini tamamla</p>
+          <div class="task-progress">
+            <div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div>
+            <span>2/5 Tamamlandı</span>
+          </div>
+          <button class="btn-primary mt-1" onclick="navigate('tests')">🚀 Devam Et</button>
+        </div>
+        <div class="dash-card glass-card stats-card">
+          <h3>📊 İstatistiklerim</h3>
+          <div class="stats-grid">
+            <div class="stat-item"><div class="stat-val" id="stat-tests">42</div><div class="stat-lbl">Test</div></div>
+            <div class="stat-item"><div class="stat-val" id="stat-score">%78</div><div class="stat-lbl">Ort. Puan</div></div>
+            <div class="stat-item"><div class="stat-val" id="stat-rank">#24</div><div class="stat-lbl">Sıra</div></div>
+            <div class="stat-item"><div class="stat-val" id="stat-badges">3</div><div class="stat-lbl">Rozet</div></div>
+          </div>
+        </div>
+        <div class="dash-card glass-card badge-preview-card">
+          <h3>🏅 Rozetlerim</h3>
+          <div class="badge-row" id="dash-badge-row"></div>
+        </div>
+        <div class="dash-card glass-card plan-card">
+          <h3>📆 Bugünün Planı</h3>
+          <div class="plan-list" id="dash-plan-list"></div>
+          <button class="btn-outline mt-1" onclick="navigate('classroom')">Planı Düzenle →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== LİG TABLOSU ===== -->
+    <div id="screen-league" class="screen-inner hidden">
+      <div class="page-header">
+        <div>
+          <h2 class="page-title">🏆 Lig Tablosu</h2>
+          <p class="page-sub">Sınırlı bir koltuk, sonsuz bir rekabet</p>
+        </div>
+      </div>
+      <div class="league-tabs" id="league-tabs">
+        <button class="tab-btn active" data-tier="10" onclick="switchLeagueTier(10, this)">İlk 10</button>
+        <button class="tab-btn" data-tier="30" onclick="switchLeagueTier(30, this)">İlk 30</button>
+        <button class="tab-btn" data-tier="50" onclick="switchLeagueTier(50, this)">İlk 50</button>
+        <button class="tab-btn" data-tier="100" onclick="switchLeagueTier(100, this)">İlk 100</button>
+        <button class="tab-btn" data-tier="1000" onclick="switchLeagueTier(1000, this)">İlk 1000</button>
+      </div>
+      <div class="league-table-wrap glass-card">
+        <table class="league-table" id="league-table">
+          <thead>
+            <tr><th>#</th><th>Öğrenci</th><th>Okul</th><th>Rozet</th><th>Puan</th></tr>
+          </thead>
+          <tbody id="league-tbody"></tbody>
+        </table>
+      </div>
+      <div class="badge-showcase glass-card">
+        <h3>🏅 Tüm Rozetler</h3>
+        <div class="badge-showcase-grid" id="badge-showcase-grid"></div>
+      </div>
+    </div>
+
+    <!-- ===== PROFİL ===== -->
+    <div id="screen-profile" class="screen-inner hidden">
+      <div class="page-header">
+        <h2 class="page-title">👤 Profilim</h2>
+      </div>
+      <div class="profile-tabs">
+        <button class="tab-btn active" onclick="switchProfileTab('info', this)">Bilgilerim</button>
+        <button class="tab-btn" onclick="switchProfileTab('class', this)">Sanal Sınıf</button>
+        <button class="tab-btn" onclick="switchProfileTab('notebook', this)">Sanal Defter</button>
+        <button class="tab-btn" onclick="switchProfileTab('foundation', this)">Hadi Çalışalım</button>
+      </div>
+
+      <!-- Bilgilerim Sekmesi -->
+      <div id="profile-tab-info" class="profile-tab-content">
+        <div class="profile-main glass-card">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" id="profile-avatar-display">AY</div>
+            <button class="avatar-change-btn" onclick="document.getElementById('avatar-upload').click()">📷 Değiştir</button>
+            <input type="file" id="avatar-upload" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)" />
+          </div>
+          <div class="profile-fields">
+            <div class="form-group"><label>Ad Soyad</label><input type="text" id="profile-name" value="Ahmet Yılmaz" /></div>
+            <div class="form-group"><label>Okul Adı</label><input type="text" id="profile-school" value="Atatürk Anadolu Lisesi" /></div>
+            <div class="form-group"><label>Okul Numarası</label><input type="text" id="profile-schoolno" value="2024001" /></div>
+            <div class="form-group"><label>E-posta</label><input type="email" id="profile-email" value="ahmet@okul.edu.tr" /></div>
+            <button class="btn-primary" onclick="saveProfile()">💾 Kaydet</button>
+          </div>
+        </div>
+        <button class="btn-eokul glass-card" onclick="openEOkul()">
+          <span class="eokul-icon">🏫</span>
+          <div>
+            <div class="eokul-title">e-Okul Entegrasyonu</div>
+            <div class="eokul-sub">Devamsızlık ve not durumunu görüntüle</div>
+          </div>
+          <span class="eokul-arrow">→</span>
+        </button>
+      </div>
+
+      <!-- Sanal Sınıf Sekmesi -->
+      <div id="profile-tab-class" class="profile-tab-content hidden">
+        <div class="glass-card">
+          <h3 class="section-title">👥 10-A Sanal Sınıfı</h3>
+          <div class="virtual-class-list" id="virtual-class-list"></div>
+        </div>
+      </div>
+
+      <!-- Sanal Defter Sekmesi -->
+      <div id="profile-tab-notebook" class="profile-tab-content hidden">
+        <div class="glass-card notebook-card">
+          <div class="notebook-header">
+            <h3 class="section-title">📓 Sanal Defter</h3>
+            <button class="btn-small" onclick="addNote()">+ Yeni Not</button>
+          </div>
+          <div class="notebook-toolbar">
+            <button onclick="formatNote('bold')" title="Kalın"><b>B</b></button>
+            <button onclick="formatNote('italic')" title="İtalik"><i>I</i></button>
+            <button onclick="formatNote('underline')" title="Altı Çizili"><u>U</u></button>
+            <button onclick="formatNote('insertUnorderedList')" title="Liste">• Liste</button>
+            <button onclick="formatNote('insertOrderedList')" title="Numaralı">1. Liste</button>
+          </div>
+          <div class="notebook-notes" id="notebook-notes"></div>
+          <div class="note-editor" id="note-editor" contenteditable="true" placeholder="Notunu buraya yaz..."></div>
+          <button class="btn-primary mt-1" onclick="saveNote()">💾 Notu Kaydet</button>
+        </div>
+      </div>
+
+      <!-- Hadi Çalışalım Sekmesi -->
+      <div id="profile-tab-foundation" class="profile-tab-content hidden">
+        <div class="glass-card foundation-card">
+          <h3 class="section-title">🏗️ Hadi Çalışalım — Temel Atma Modülü</h3>
+          <p class="section-desc">5. sınıftan başlayarak lise konularının temelini sırasıyla pekiştir.</p>
+          <div class="skill-tree" id="skill-tree"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DERSLİK ===== -->
+    <div id="screen-classroom" class="screen-inner hidden">
+      <div class="page-header">
+        <h2 class="page-title">🎓 Derslik</h2>
+        <p class="page-sub">Bölümünü seç, derslerini planla</p>
+      </div>
+      <div class="classroom-grid">
+        <!-- Bölüm Seçimi -->
+        <div class="glass-card">
+          <h3 class="section-title">🏭 Meslek Lisesi Bölümü</h3>
+          <select class="form-select" id="vocational-branch" onchange="onBranchChange()">
+            <option value="">— Lise Türü Seç —</option>
+            <option value="anadolu">Anadolu Lisesi</option>
+            <option value="fen">Fen Lisesi</option>
+            <option value="elektrik">Meslek Lisesi — Elektrik-Elektronik</option>
+            <option value="bilisim">Meslek Lisesi — Bilişim Teknolojileri</option>
+            <option value="makine">Meslek Lisesi — Makine Teknolojisi</option>
+            <option value="insaat">Meslek Lisesi — İnşaat</option>
+            <option value="saglik">Meslek Lisesi — Sağlık Hizmetleri</option>
+            <option value="mutfak">Meslek Lisesi — Aşçılık &amp; Gastronomi</option>
+            <option value="muhasebe">Meslek Lisesi — Muhasebe &amp; Finans</option>
+          </select>
+          <div id="my-courses" class="my-courses-list"></div>
+        </div>
+
+        <!-- Günlük Plan -->
+        <div class="glass-card">
+          <h3 class="section-title">📆 Günlük Planım</h3>
+          <div class="plan-builder">
+            <div class="plan-form">
+              <select id="plan-subject" class="form-select">
+                <option value="">Ders Seç</option>
+              </select>
+              <input type="time" id="plan-time" class="form-input" value="09:00" />
+              <input type="number" id="plan-duration" class="form-input" placeholder="Süre (dk)" min="15" max="180" value="45" />
+              <button class="btn-primary" onclick="addPlanItem()">+ Ekle</button>
+            </div>
+            <div class="plan-schedule" id="plan-schedule"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== KONU ANLATIMI ===== -->
+    <div id="screen-topics" class="screen-inner hidden">
+      <div class="page-header">
+        <h2 class="page-title">📖 Konu Anlatımı</h2>
+        <p class="page-sub">En iyi YouTube kaynaklarını sana öneriyoruz</p>
+      </div>
+      <div class="topics-layout">
+        <div class="topics-sidebar glass-card">
+          <h3 class="section-title">Ders Seç</h3>
+          <ul class="subject-list" id="subject-list"></ul>
+        </div>
+        <div class="topics-content glass-card">
+          <div id="topic-selector" class="hidden">
+            <h3 class="section-title" id="selected-subject-name">Konular</h3>
+            <ul class="topic-list" id="topic-list"></ul>
+          </div>
+          <div id="video-player-section" class="hidden">
+            <div class="video-back-btn" onclick="backToTopics()">← Konulara Dön</div>
+            <h3 class="section-title" id="video-title">Konu Başlığı</h3>
+            <div class="video-embed-wrap">
+              <iframe id="youtube-iframe" 
+                src="" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+              </iframe>
+            </div>
+            <div class="video-meta glass-card" id="video-meta">
+              <div class="video-meta-title" id="vm-title"></div>
+              <div class="video-meta-channel" id="vm-channel"></div>
+            </div>
+            <button id="ai-summary-btn" class="btn-secondary hidden" style="margin-top:0.75rem">
+              🤖 AI ile Konu Özeti Göster
+            </button>
+          </div>
+          <div id="topic-placeholder" class="topic-placeholder">
+            <div class="placeholder-emoji">📚</div>
+            <p>Soldaki listeden bir ders seç</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TEST MODÜLÜ ===== -->
+    <div id="screen-tests" class="screen-inner hidden">
+      <div class="page-header">
+        <h2 class="page-title">✏️ Test Modülü</h2>
+      </div>
+      <div class="tests-tabs">
+        <button class="tab-btn active" onclick="switchTestTab('create', this)">Yeni Test</button>
+        <button class="tab-btn" onclick="switchTestTab('history', this)">Geçmiş</button>
+      </div>
+
+      <!-- Yeni Test Oluştur -->
+      <div id="test-tab-create">
+        <div id="test-setup" class="glass-card test-setup-card">
+          <h3 class="section-title">🤖 Yapay Zeka ile Test Oluştur</h3>
+          <div class="test-options">
+            <div class="form-group">
+              <label>Ders</label>
+              <select class="form-select" id="test-subject" onchange="onTestSubjectChange()"></select>
+            </div>
+            <div class="form-group">
+              <label>Konu</label>
+              <select class="form-select" id="test-topic"><option value="">— Önce Ders Seç —</option></select>
+            </div>
+            <div class="form-group">
+              <label>Zorluk</label>
+              <div class="difficulty-selector">
+                <label class="diff-opt"><input type="radio" name="difficulty" value="easy" checked /> <span class="diff-tag easy">Kolay</span></label>
+                <label class="diff-opt"><input type="radio" name="difficulty" value="medium" /> <span class="diff-tag medium">Orta</span></label>
+                <label class="diff-opt"><input type="radio" name="difficulty" value="hard" /> <span class="diff-tag hard">Zor</span></label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Soru Sayısı</label>
+              <div class="question-count-selector">
+                <label class="diff-opt"><input type="radio" name="qcount" value="20" checked /> <span class="diff-tag medium">20 Soru</span></label>
+                <label class="diff-opt"><input type="radio" name="qcount" value="40" /> <span class="diff-tag hard">40 Soru</span></label>
+              </div>
+            </div>
+            <div class="form-group" style="align-self:flex-end">
+              <label style="opacity:0">Sınıf</label>
+              <div class="grade-badge-test">📚 <span id="test-grade-display"></span> Sınıf Müfredatı</div>
+            </div>
+          </div>
+          <button class="btn-primary btn-generate" onclick="generateTest()">
+            <span id="generate-btn-text">🤖 Test Oluştur</span>
+          </button>
+        </div>
+
+        <!-- Test Aktif -->
+        <div id="test-active" class="hidden">
+          <div class="test-header-bar glass-card">
+            <div class="test-info">
+              <span id="test-info-label">Matematik — Orta — 20 Soru</span>
+            </div>
+            <div class="test-timer" id="test-timer">⏱ 00:00</div>
+            <button class="btn-danger" onclick="submitTest()">Teslim Et</button>
+          </div>
+          <div class="questions-container" id="questions-container"></div>
+          <button class="btn-primary btn-submit-test" onclick="submitTest()">📤 Testi Teslim Et</button>
+        </div>
+
+        <!-- Test Sonucu -->
+        <div id="test-result" class="hidden">
+          <div class="result-card glass-card">
+            <h3 class="section-title">📊 Test Sonucu</h3>
+            <div class="result-score-circle" id="result-score-circle">
+              <div class="score-number" id="result-score-num">0</div>
+              <div class="score-label">Puan</div>
+            </div>
+            <div class="result-stats">
+              <div class="r-stat correct">✅ Doğru: <b id="r-correct">0</b></div>
+              <div class="r-stat wrong">❌ Yanlış: <b id="r-wrong">0</b></div>
+              <div class="r-stat empty">⬜ Boş: <b id="r-empty">0</b></div>
+            </div>
+            <div class="wrong-topics-section">
+              <h4>Eksik Konular</h4>
+              <div class="wrong-tags" id="wrong-tags"></div>
+            </div>
+            <button class="btn-primary" onclick="newTest()">🔄 Yeni Test Oluştur</button>
+          </div>
+          <div class="result-review glass-card" id="result-review"></div>
+        </div>
+      </div>
+
+      <!-- Geçmiş Sekmesi -->
+      <div id="test-tab-history" class="hidden">
+        <div class="glass-card">
+          <h3 class="section-title">📋 Test Geçmişi</h3>
+          <table class="history-table">
+            <thead>
+              <tr><th>Tarih</th><th>Ders</th><th>Konu</th><th>Süre</th><th>Puan</th><th>D</th><th>Y</th><th>B</th></tr>
+            </thead>
+            <tbody id="history-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== OYUN MODÜLÜ ===== -->
+    <div id="screen-game" class="screen-inner hidden">
+      <div id="game-intro" class="game-intro">
+        <div class="game-intro-content glass-card">
+          <div class="game-logo">⚡</div>
+          <h2 class="game-title">Bilgi Yarışması</h2>
+          <p class="game-desc">Soruları yanıtla, puan kazan, sınıfında zirveye çık!</p>
+          <div class="form-group">
+            <label>Ders Seç</label>
+            <select class="form-select" id="game-subject-select"></select>
+          </div>
+          <button class="btn-primary btn-game-start" onclick="startGame()">🎮 Oyunu Başlat</button>
+        </div>
+      </div>
+
+      <div id="game-play" class="game-play hidden">
+        <div class="game-top-bar">
+          <div class="game-score-display">💰 <span id="game-score">0</span> Puan</div>
+          <div class="game-q-count">Soru <span id="game-q-num">1</span>/15</div>
+          <button class="btn-small btn-quit" onclick="quitGame()">✕ Çık</button>
+        </div>
+        <div class="game-stage glass-card">
+          <div class="game-question-wrap">
+            <div class="game-q-number">Soru <span id="gq-num-display">1</span> / 15</div>
+            <div id="game-visual-area" style="margin:0.5rem 0"></div>
+            <div class="game-question" id="game-question-text">Soru yükleniyor...</div>
+          </div>
+          <div class="game-options" id="game-options"></div>
+          <div class="game-prize-ladder" id="game-prize-ladder"></div>
+        </div>
+      </div>
+
+      <div id="game-over" class="game-over hidden">
+        <div class="glass-card game-over-card">
+          <div id="game-over-emoji">🎉</div>
+          <h2 id="game-over-title">Tebrikler!</h2>
+          <p id="game-over-sub">15 soruyu tamamladın!</p>
+          <div class="game-final-score">💰 <span id="game-final-score">0</span> Puan</div>
+          <button class="btn-primary" onclick="restartGame()">🔄 Tekrar Oyna</button>
+          <button class="btn-outline" onclick="navigate('league')">🏆 Lig Tablosu</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="config.js"></script>
+<script src="gemini.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
